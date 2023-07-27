@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Abel&family=Sora&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+    --primary:#02825C;
+}
+*{
+    font-family: "sora";
+}
+
+input[type="radio"]:checked + .radio-btn{
+    background-color: var(--primary);
+    color: white;
+}
