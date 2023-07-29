@@ -3,6 +3,7 @@ import {BrowserRouter,Routes,Route} from 'react-router-dom'
 import Login from './Components/Login'
 import Choices from './Components/Choices'
 import Attendance from './Components/Attendance'
+import Feedback from './Components/Feedback'
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path='/' element={<Login />}></Route>
         <Route path='/selection' element={<Choices />}></Route>
         <Route path='/attendance' element={<Attendance />}></Route>
+        <Route path='/feedback' element={<Feedback />}></Route>
       </Routes>
     </BrowserRouter>
   )

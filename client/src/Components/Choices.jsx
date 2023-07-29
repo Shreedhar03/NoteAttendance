@@ -3,7 +3,7 @@ import Radio from './Radio'
 
 const Choices = () => {
     return (
-        <form className='flex flex-col mt-8 gap-8 text-xl'>
+        <form className='flex flex-col mt-8 gap-8 text-xl px-6'>
             <div>
                 <h1 className='text-2xl mb-2'>Year</h1>
                 <div className="flex gap-3">
@@ -42,7 +42,7 @@ const Choices = () => {
                 </select>
             </div>
 
-            <input type="submit" value="Proceed" className='bg-[var(--primary)] p-4 mt-8 rounded-lg text-white' />
+            <input type="submit" value="Proceed" className='bg-[var(--primary)] p-3 mt-8 rounded-lg text-white' />
 
         </form>
     )
