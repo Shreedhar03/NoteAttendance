@@ -9,7 +9,7 @@ const Login = () => {
         <div className='h-[80vh] flex flex-col items-center justify-center gap-12'>
             <div className="logo flex items-center">
                 <img src={logo} alt="logo" />
-                <div className='text-3xl flex flex-col font-semibold text-[var(--primary)]'><span>Attend</span><span>Ease</span></div>
+                <div className='text-3xl flex flex-col font-semibold text-[var(--primary)]'><span>Note</span><span>Attendance</span></div>
             </div>
             <p className='text-xl'>Login to Continue</p>
             <form className='flex flex-col gap-3 w-[90%]'>
