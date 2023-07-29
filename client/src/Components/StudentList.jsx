@@ -28,11 +28,14 @@ const StudentList = (props) => {
         <h1>{newName(props.name)}</h1>
       </div>
       {
+        props.check &&
         <label htmlFor={props.id} className={`${'bg-gray-200'} rounded-full h-6 w-6 shadow-inner shadow-gray-500`}>
           {props.presentStudents.includes(props.name) && <img src={checked} />}
         </label>
       }
-      <input type="checkbox" name="present" id={props.id} className='hidden' onChange={handleCheck} />
+      {
+      props.check && <input type="checkbox" name="present" id={props.id} className='hidden' onChange={handleCheck} />
+      }
     </div>
   )
 }
