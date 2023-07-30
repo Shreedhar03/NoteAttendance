@@ -19,17 +19,19 @@ const Search = () => {
     // console.log(studentList)
   }
   const handleBlur = () => {
-    setStudentList(students)
+    setTimeout(()=>{
+      setStudentList(students)
+    },1000)
   }
   return (
     <section className='flex flex-col gap-3 my-8 px-6'>
       <div className='flex gap-4 justify-center'>
-        <select name="year" id="year" value={year} onChange={(e) => setYear(e.target.value)} className='w-1/2 p-3 rounded-lg focus:outline-none bg-inherit border-2 border-gray-400'>
+        <select name="year" id="year" value={year} onChange={(e) => setYear(e.target.value)} className='w-1/2 p-2 rounded-lg focus:outline-none bg-inherit border-2 border-gray-400'>
           <option value="SE">SE</option>
           <option value="TE">TE</option>
           <option value="BE">BE</option>
         </select>
-        <select name="division" id="division" value={division} onChange={(e) => setDivision(e.target.value)} className='w-1/2 p-3 rounded-lg focus:outline-none bg-inherit border-2 border-gray-400'>
+        <select name="division" id="division" value={division} onChange={(e) => setDivision(e.target.value)} className='w-1/2 p-2 rounded-lg focus:outline-none bg-inherit border-2 border-gray-400'>
           <option value="A">A</option>
           <option value="B">B</option>
           <option value="C">C</option>

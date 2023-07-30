@@ -10,8 +10,8 @@ const StudentList = (props) => {
     const [fName, ...lName] = splited
     return (
       <div className='flex flex-col'>
-        <span className='abel text-2xl h-6'>{fName}</span>
-        <span className='abel text-2xl'>{lName.join(" ")}</span>
+        <span className='abel text-xl h-6'>{fName}</span>
+        <span className='abel text-xl'>{lName.join(" ")}</span>
       </div>
     )
   }
@@ -24,9 +24,10 @@ const StudentList = (props) => {
   }
 
   return (
-    <div className={`w-full rounded-lg border-2 border-gray-300 flex items-center justify-between px-4 ${!props.check && 'cursor-pointer'}`}>
+    <div className={`w-full rounded-lg border-2 border-gray-300 flex items-center justify-between px-4
+     ${!props.check && 'cursor-pointer'}`} onClick={()=>!props.check && navigate(`/student-info/${props.roll}`)}>
       <div className='flex items-center gap-3'>
-        <h1 className='text-2xl border-gray-300 h-full border-r-2 w-12'>{props.roll}</h1>
+        <h1 className='text-2xl border-gray-300 h-full border-r-2 w-12'>{props.roll.slice(4)}</h1>
         <h1>{newName(props.name)}</h1>
       </div>
       {
