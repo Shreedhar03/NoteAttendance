@@ -1,7 +1,9 @@
 import React from 'react'
 import checked from '../assets/checked.svg'
+import { useNavigate } from 'react-router-dom'
 
 const StudentList = (props) => {
+  const navigate=useNavigate()
 
   const newName = (name) => {
     const splited = name.split(" ")
@@ -22,7 +24,7 @@ const StudentList = (props) => {
   }
 
   return (
-    <div className='w-full rounded-lg border-2 border-gray-300 flex items-center justify-between px-4'>
+    <div className={`w-full rounded-lg border-2 border-gray-300 flex items-center justify-between px-4 ${!props.check && 'cursor-pointer'}`}>
       <div className='flex items-center gap-3'>
         <h1 className='text-2xl border-gray-300 h-full border-r-2 w-12'>{props.roll}</h1>
         <h1>{newName(props.name)}</h1>

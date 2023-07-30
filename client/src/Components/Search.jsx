@@ -37,7 +37,7 @@ const Search = () => {
       </div>
 
       <form>
-        <input type="text" onFocus={""} onBlur={handleBlur} placeholder='Search by Roll No. or Name' value={search} className='w-full px-3 py-2 border-2 border-gray-400 rounded-lg' onChange={handleSearch} />
+        <input type="text" onBlur={handleBlur} placeholder='Search by Roll No. or Name' value={search} className='w-full px-3 py-2 border-2 border-gray-400 rounded-lg' onChange={handleSearch} />
         <div className='flex flex-col gap-2 mt-8'>
           {
             studentList.map((s, key) => {

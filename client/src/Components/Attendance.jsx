@@ -60,7 +60,7 @@ const Attendance = () => {
                         </div>
                         :
                         students.map((s, key) => {
-                            return (<StudentList name={s.fullName} key={key} roll={s.rollNo} id={key} setPresentStudents={setPresentStudents} presentStudents={presentStudents} />)
+                            return (<StudentList name={s.fullName} key={key} roll={s.rollNo} id={key} setPresentStudents={setPresentStudents} presentStudents={presentStudents} check={true}/>)
                         })
                 }
 
