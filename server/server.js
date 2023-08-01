@@ -4,6 +4,10 @@ dotenv.config()
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { JWT } = require('google-auth-library')
 
+const { config } = require('./config')
+
+console.log(config.TE.A.lastRoll)
+
 const express = require('express')
 
 const app = express()
