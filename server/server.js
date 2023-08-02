@@ -169,3 +169,30 @@ app.post('/api/get_studentinfo', async (req, res) => {
   }
   res.json(student_info)
 })
+
+
+app.post('/api/mark_attendance2', async (req, res) => {
+  console.log('MARK2')
+  try {
+    // Getting parameters from request
+    const { year, div, subject, present_students, date } = req.body
+
+    // Opening appropriate sheet
+    const doc = new GoogleSpreadsheet(
+      config[year][div].sheetId,
+      serviceAccountAuth
+    )
+
+    await doc.loadInfo()
+    console.log(doc.title)
+
+    // Mark appropriate attendance
+    // Check if sheet provided is correct
+    //Select appropriate sheet
+    const sheet = doc.sheetsByTitle[subject]
+
+
+  } catch (err) {
+    console.log(err.message)
+  }
+})
