@@ -2,21 +2,15 @@ import React, { useContext, useState } from 'react'
 import logo from '../assets/logo.svg'
 import eye_close from '../assets/eye_close.svg'
 import eye_open from '../assets/eye_open.svg'
-import { AppContext } from '../App'
-import credentials from '../credentials'
 import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
-    const {loggedIn,setLoggedIn}=useContext(AppContext)
     const goto = useNavigate()
     const [showPass,setShowPass]=useState(false)
     const [username,setUsername]=useState("")
     const [password,setPassword]=useState("")
     const handleSubmit=(e)=>{
         e.preventDefault();
-        console.log(credentials.credentials)
-        console.log(loggedIn)
-        setLoggedIn(true)
         goto('/selection')
     }
     return (

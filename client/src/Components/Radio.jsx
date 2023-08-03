@@ -5,7 +5,7 @@ const Radio = (props) => {
 
   return (
     <>
-      <input type="radio" className="hidden" checked={props.value===props.label} value={props.label} onChange={props.handleChange} name={props.name} id={props.label} required/>
+      <input type="radio" required className="hidden" checked={props.value===props.label} value={props.label} onChange={props.handleChange} name={props.name} id={props.label}/>
       <label
         htmlFor={props.label}
         className={`radio-btn ${props.sm ? 'h-14 w-14' : 'px-8 py-3'} flex items-center justify-center

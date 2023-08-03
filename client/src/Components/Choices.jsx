@@ -1,19 +1,39 @@
 import React, { useEffect, useState } from 'react'
 import Radio from './Radio'
+import { useNavigate } from 'react-router-dom'
+import { subjects } from '../../subjects.js'
 
 const Choices = () => {
+    const goto = useNavigate()
     const [formValues, setFormValues] = useState({
         year: "SE",
         division: "A",
         session: "Theory",
-        subject: "DBMS",
-        batch: "T1"
+        subject: "DM",
+        labSubject:"FDSL",
+        batch: "S1"
     })
+    const [theorySubjects, setTheorySubjects] = useState([])
+    const [batches, setBatches] = useState([])
+    const [labSubjects, setLabSubjects] = useState([])
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value })
+        // console.log("formValues.year",formValues.year)
     }
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        goto('/attendance')
+        console.log(formValues)
+        // console.log("okk")
+        // console.log(subjects)
+    }
+    useEffect(() => {
+        setTheorySubjects(subjects[formValues.year].theory)
+        setLabSubjects(subjects[formValues.year].lab)
+        setBatches(subjects[formValues.year].batches)
+    }, [formValues])
     return (
-        <form className='flex flex-col mt-8 gap-8 text-xl px-6'>
+        <form className='flex flex-col mt-8 gap-8 text-xl px-6' onSubmit={handleSubmit}>
             <div>
                 <h1 className='text-2xl mb-2'>Year</h1>
                 <div className="flex gap-3">
@@ -38,22 +58,31 @@ const Choices = () => {
             </div>
 
             <div>
-                <select name="subject" id="subject" onChange={handleChange} value={formValues.subject} required className='p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
-                    <option value="DBMS" className='py-2'>DBMS</option>
-                    <option value="TOC" className='py-2'>TOC</option>
-                    <option value="CNS" className='py-2'>CNS</option>
-                    <option value="SPOS" className='py-2'>SPOS</option>
-                    <option value="HCI" className='py-2'>HCI</option>
-                </select>
-                {formValues.session === "Practical" &&
-                    <select name="batch" id="batch" onChange={handleChange} value={formValues.batch} required className='ml-4 p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
-                        <option value="T1" className='py-2' selected>T1</option>
-                        <option value="T2" className='py-2'>T2</option>
-                        <option value="T3" className='py-2'>T3</option>
+                {
+                    formValues.session === "Practical" &&
+                    <select name="labSubject" id="labSubject" onChange={handleChange} value={formValues.labSubject} required className='p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
+                        {
+                            labSubjects.map((lab, key) => {
+                                return <option value={lab} key={key} className='py-2'>{lab}</option>
+                            })
+                        }
                     </select>
                 }
+                {
+                    formValues.session === "Theory" ?
+                        <select name="subject" id="subject" onChange={handleChange} value={formValues.subject} required className='p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
+                            {theorySubjects.map((subject, key) => {
+                                return <option key={key} value={subject} className='py-2'>{subject}</option>
+                            })}
+                        </select>
+                        :
+                        <select name="batch" id="batch" onChange={handleChange} value={formValues.batch} required className='ml-4 p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
+                            {batches.map((subject, key) => {
+                                return <option key={key} value={subject} className='py-2'>{subject}</option>
+                            })}
+                        </select>
+                }
             </div>
-
             <input type="submit" value="Proceed" className='bg-[var(--primary)] p-3 mt-8 rounded-lg text-white' />
 
         </form>
