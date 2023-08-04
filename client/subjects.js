@@ -11,7 +11,7 @@ export const subjects = {
     },
     BE: {
         theory: ["XX", "YY", "ZZ"],
-        labs: ["XXL", "YYL", "ZZL"],
+        lab: ["XXL", "YYL", "ZZL"],
         batches: ["B1","B2","B3"]
     },
 }

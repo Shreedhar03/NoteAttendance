@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import Radio from './Radio'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { subjects } from '../../subjects.js'
+import Dialog from './Dialog'
 
 const Choices = () => {
     const goto = useNavigate()
+    const [dialog,setDialog]=useState(true)
     const [formValues, setFormValues] = useState({
         year: "SE",
         division: "A",
         session: "Theory",
         subject: "DM",
-        labSubject:"FDSL",
+        labSubject: "FDSL",
         batch: "S1"
     })
     const [theorySubjects, setTheorySubjects] = useState([])
@@ -27,14 +29,17 @@ const Choices = () => {
         // console.log("okk")
         // console.log(subjects)
     }
+    const handleCancel=()=>{
+        setDialog(false)
+    }
     useEffect(() => {
         setTheorySubjects(subjects[formValues.year].theory)
         setLabSubjects(subjects[formValues.year].lab)
         setBatches(subjects[formValues.year].batches)
     }, [formValues])
     return (
-        <form className='flex flex-col mt-8 gap-8 text-xl px-6' onSubmit={handleSubmit}>
-            <div>
+        <form className='flex flex-col mt-8 gap-8 text-xl px-6 relative' onSubmit={handleSubmit}>
+            <div className={` ${dialog&&'opacity-10'}`}>
                 <h1 className='text-2xl mb-2'>Year</h1>
                 <div className="flex gap-3">
                     <Radio label="SE" value={formValues.year} handleChange={handleChange} name="year" sm={true} />
@@ -42,7 +47,8 @@ const Choices = () => {
                     <Radio label="BE" value={formValues.year} handleChange={handleChange} name="year" sm={true} />
                 </div>
             </div>
-            <div>
+           
+            <div className={`${dialog&&'opacity-10'}`}>
                 <h1 className='text-2xl mb-2'>Division</h1>
                 <div className="flex gap-3">
                     <Radio handleChange={handleChange} value={formValues.division} label="A" name="division" sm={true} />
@@ -52,12 +58,12 @@ const Choices = () => {
                 </div>
             </div>
 
-            <div className="flex">
+            <div className={`flex ${dialog&&'opacity-10'}`}>
                 <Radio handleChange={handleChange} value={formValues.session} label="Theory" name="session" sm={false} border_l={true} />
                 <Radio handleChange={handleChange} value={formValues.session} label="Practical" name="session" sm={false} border_r={true} />
             </div>
 
-            <div>
+            <div className={` ${dialog&&'opacity-10'}`}>
                 {
                     formValues.session === "Practical" &&
                     <select name="labSubject" id="labSubject" onChange={handleChange} value={formValues.labSubject} required className='p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
@@ -83,7 +89,13 @@ const Choices = () => {
                         </select>
                 }
             </div>
-            <input type="submit" value="Proceed" className='bg-[var(--primary)] p-3 mt-8 rounded-lg text-white' />
+            
+            <div className={`w-full mt-4 ${dialog&&'opacity-10'}`}>
+                <Link to={'/search'} className='block my-3 text-lg underline'>Check Student Report</Link>
+                <input type="submit" value="Proceed" className='bg-[var(--primary)] w-full p-3 rounded-lg text-white' />
+            </div>
+
+            <Dialog handleCancel={handleCancel} dialog={dialog} handleSubmit={handleSubmit} message="Entry Already exists for this date. Do You want to continue?"/>
 
         </form>
     )
