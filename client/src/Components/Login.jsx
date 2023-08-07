@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
 
 const Login = () => {
-    const { user,isLoggedIn, signInWithGoogle, signOutWithGoogle } = useContext(AppContext)
+    const { userMessage,isLoggedIn, signInWithGoogle, signOutWithGoogle } = useContext(AppContext)
     const goto = useNavigate()
     const [showPass, setShowPass] = useState(false)
     const [username, setUsername] = useState("")
@@ -17,7 +17,7 @@ const Login = () => {
         goto('/selection')
     }
     return (
-        <div className='h-[80vh] flex flex-col items-center justify-center gap-12'>
+        <div className='h-[80vh] flex flex-col items-center justify-center gap-20'>
             <div className="logo flex items-center">
                 <img src={logo} alt="logo" />
                 <div className='text-3xl flex flex-col font-semibold text-[var(--primary)]'><span>Note</span><span>Attendance</span></div>
@@ -33,9 +33,16 @@ const Login = () => {
                 <input type="submit" value="Proceed" className='bg-[var(--primary)] p-4 mt-8 rounded-lg text-white' />
     </form>*/}
             {  !isLoggedIn ? 
-                <button onClick={signInWithGoogle}>
+            <>
+                {/* <button onClick={signInWithGoogle}>
                     <img src={Google} alt="" />
-                </button>
+                </button> */}
+                <div onClick={signInWithGoogle} className='flex items-center gap-3 shadow-lg rounded-lg bg-gray-50 px-6 py-3'>
+                    <img src={Google} alt="" />
+                    <p className=''>Continue with Google</p>
+                </div>
+                <p className='text-center text-red-600'>{userMessage}</p>
+            </>
                 :
                 <div className='flex flex-col gap-3'>
                 <button className='text- bg-slate-700 text-white py-2 px-4 rounded-lg'>Continue &rarr;</button>

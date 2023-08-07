@@ -26,25 +26,9 @@ setPersistence(auth, browserLocalPersistence)
 
 const provider = new GoogleAuthProvider()
 
-// Function to handle sign-in
-const signInWithGoogle = () => {
-  signInWithPopup(auth, provider).then(result => {
-    // console.log(result)
-  }).catch(err => {
-    console.log("error signing in")
-  })
-}
+// permitted users
+const permittedUsers = ["urawane03@gmail.com"]
 
-// Function to handle sign-out
-const signOutWithGoogle = () => {
-  signOut(auth)
-    .then(() => {
-      console.log("Sign-out successful!");
-    })
-    .catch(error => {
-      console.error("Error signing out:", error);
-    });
-};
 
 export const AppContext = createContext()
 
@@ -132,14 +116,38 @@ function App() {
   ])
   const [isLoggedIn, setIsLoggedIn] = useState()
   const [user, setUser] = useState('')
+  const [userMessage, setUserMessage] = useState('')
+
+  // Function to handle sign-in
+  const signInWithGoogle = () => {
+    signInWithPopup(auth, provider).then(result => {
+      if (!permittedUsers.includes(result.user.email)) {
+        setUserMessage("Access Denied")
+      }
+    }).catch(err => {
+      console.log("error signing in")
+    })
+  }
+
+  // Function to handle sign-out
+  const signOutWithGoogle = () => {
+    signOut(auth)
+      .then(() => {
+        console.log("Sign-out successful!");
+      })
+      .catch(error => {
+        console.error("Error signing out:", error);
+      });
+  };
 
   const checkAuthState = () => {
     onAuthStateChanged(auth, user => {
-      if (user) {
+      if (user && permittedUsers.includes(user.email)) {
         setIsLoggedIn(true)
         setUser(user.displayName)
       } else {
         setIsLoggedIn(false)
+        // setUserMessage("Login to Continue")
       }
     });
   };
@@ -149,7 +157,7 @@ function App() {
     // console.log(import.meta.env.VITE_apiKey)
   }, [])
   return (
-    <AppContext.Provider value={{ students, isLoggedIn, signInWithGoogle, signOutWithGoogle, user }}>
+    <AppContext.Provider value={{ students, isLoggedIn, userMessage, signInWithGoogle, signOutWithGoogle, user }}>
       <BrowserRouter>
         <Routes>
           <Route path='/' element={isLoggedIn ? <Choices /> : <Login />}></Route>
