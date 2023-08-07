@@ -10,17 +10,18 @@ import Search from './Components/Search'
 import Student_Info from './Components/Student_Info'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA_hLvWBiTkdKZ-0_9GER4YGCdWt4lXrno",
-  authDomain: "noteattendance.firebaseapp.com",
-  projectId: "noteattendance",
-  storageBucket: "noteattendance.appspot.com",
-  messagingSenderId: "52025186092",
-  appId: "1:52025186092:web:c57eafa99ec56794453e89",
-  measurementId: "G-G3KCVZMNLG"
-};
+  apiKey: import.meta.env.VITE_apiKey,
+  authDomain: import.meta.env.VITE_authDomain,
+  projectId: import.meta.env.VITE_projectId,
+  storageBucket: import.meta.env.VITE_storageBucket,
+  messagingSenderId: import.meta.env.VITE_messagingSenderId,
+  appId: import.meta.env.VITE_appId,
+  measurementId: import.meta.env.VITE_measurementId,
+}
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app)
+
 setPersistence(auth, browserLocalPersistence)
 
 const provider = new GoogleAuthProvider()
@@ -131,6 +132,7 @@ function App() {
   ])
   const [isLoggedIn, setIsLoggedIn] = useState()
   const [user, setUser] = useState('')
+
   const checkAuthState = () => {
     onAuthStateChanged(auth, user => {
       if (user) {
@@ -142,10 +144,9 @@ function App() {
     });
   };
 
-
   useEffect(() => {
     checkAuthState()
-    // console.log(process.env.REACT_APP_FB_apiKey)
+    // console.log(import.meta.env.VITE_apiKey)
   }, [])
   return (
     <AppContext.Provider value={{ students, isLoggedIn, signInWithGoogle, signOutWithGoogle, user }}>
