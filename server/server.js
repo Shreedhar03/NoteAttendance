@@ -47,7 +47,7 @@ app.get('/api/get_students2', async (req, res) => {
 
   if (currentClass.theory.includes(subject)) {
     // Subject is theory
-    for (let i = 0; i <= currentClass.lastRoll; i++) {
+    for (let i = 1; i <= currentClass.lastRoll; i++) {
       students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
     }
 
@@ -194,11 +194,10 @@ app.post('/api/get_studentinfo', async (req, res) => {
 app.post('/api/mark_attendance2', async (req, res) => {
   console.log('MARK2')
   try {
-    // Getting parameters from request
-    const { year, div, subject, present_students, date } = req.body
+    const { year, div, subject, batch, present_students, date } = req.body
     const currentClass = config[year][div]
 
-    // Opening appropriate sheet
+    // Connecting to GDoc api
     const doc = new GoogleSpreadsheet(
       currentClass.sheetId,
       serviceAccountAuth
@@ -206,12 +205,39 @@ app.post('/api/mark_attendance2', async (req, res) => {
 
     await doc.loadInfo()
     console.log(doc.title)
-
-    // Mark appropriate attendance
-    // Check if sheet provided is correct
-    //Select appropriate sheet
     const sheet = doc.sheetsByTitle[subject]
 
+    // Get index of date
+    await sheet.loadHeaderRow() // Load header row to get column names
+    const columnIndex = sheet.headerValues.indexOf(date)
+
+    await sheet.loadCells()
+
+    if (currentClass.theory.includes(subject)) {
+      // Subject is theory
+      for (let i = 1; i <= currentClass.lastRoll; i++) {
+
+      }
+
+    } else if (currentClass.labs.includes(subject)) {
+      // Subject is a lab
+      if (currentClass.batches.hasOwnProperty(batch)) {
+        // Valid batch provided
+        for (let i = currentClass.batches[batch].start; i <= currentClass.batches[batch].end; i++) {
+          students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
+        }
+
+      } else {
+        // Invalid batch
+        return res.status(401).send("Invalid request")
+      }
+    } else {
+      // Invalid subject
+      return res.status(401).send("Invalid request")
+    }
+
+    await sheet.saveUpdatedCells()
+    res.send('Attendance Updated')
   } catch (err) {
     console.log(err.message)
   }
