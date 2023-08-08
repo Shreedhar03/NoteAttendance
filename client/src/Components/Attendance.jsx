@@ -5,9 +5,13 @@ import grid from '../assets/grid.svg'
 import list from '../assets/list.svg'
 import StudentGrid from './StudentGrid'
 import { AppContext } from '../App'
+import Dialog from './Dialog'
+import { useNavigate } from 'react-router-dom'
 
 const Attendance = () => {
+    const goto=useNavigate()
     const { students } = useContext(AppContext)
+    const [dialog, setDialog] = useState(true)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(true)
     const [presentStudents, setPresentStudents] = useState([])
@@ -33,6 +37,12 @@ const Attendance = () => {
             setSelectAll(true)
         }
     }
+    const handleCancel = () => {
+        goto('/selection')
+    }
+    const handleContinue=()=>{
+        setDialog(false)
+    }
     useEffect(() => {
         setTimeout(() => {
             setLoading(false)
@@ -51,7 +61,7 @@ const Attendance = () => {
                     :
                     <>
                         <Navbar navShodow={navShodow} setNavShodow={setNavShodow} presentStudents={presentStudents} students={students} />
-                        <div className='flex items-center gap-6 mt-4 px-6'>
+                        <div className={`flex items-center gap-6 mt-4 px-6 ${dialog && 'opacity-20'}`}>
                             <div className='relative flex items-center justify-center gap-1 border-2 border-black rounded-t-lg h-[60px] w-20'>
                                 <h2 className='text-[45px] font-semibold text-[var(--primary)]'>A</h2>
                                 <div className='flex flex-col items-end'>
@@ -62,7 +72,7 @@ const Attendance = () => {
                             </div>
                             <h2 className='text-3xl font-semibold'>DBMSL</h2>
                         </div>
-                        <section className='my-8 flex flex-col gap-3 px-6'>
+                        <section className={`my-8 flex flex-col gap-3 px-6 ${dialog && 'opacity-20'}`}>
                             <div className='self-end flex gap-1 mb-6'>
                                 <button onClick={() => setGridView(!gridView)}><img src={!gridView ? grid : list} className='w-6 h-6' alt="" /></button>
                                 <button className='border-2 border-gray-700 rounded-lg text-sm px-2 py-[2px]' onClick={handleSelectAll}>{selectAll ? 'Select All' : 'Reset'}</button>
@@ -81,6 +91,10 @@ const Attendance = () => {
                             }
 
                         </section>
+                        <Dialog message="Attendance for this date already exists. Do you wish to continue"
+                         dialog={dialog}
+                         handleCancel={handleCancel}
+                         handleContinue={handleContinue}/>
                     </>
             }
         </>
