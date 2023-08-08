@@ -22,34 +22,54 @@ app.listen(8080, () => console.log('Server running'))
 
 app.use(express.json())
 
-// Getting student list
-app.get('/api/get_students', async (req, res) => {
+app.get('/api/get_students2', async (req, res) => {
+
+  const { year, div, subject, batch } = req.body
+  const currentClass = config[year][div]
+
   // Connecting to GDoc api
   const doc = new GoogleSpreadsheet(
-    '1zefff2HDlPHp3Wb8vSLwACa38sAts_YTKWZL2zXfjUY',
+    currentClass.sheetId,
     serviceAccountAuth
   )
+
   // Loading document info
   await doc.loadInfo()
   console.log('TITLE: ', doc.title)
 
   // Selecting DBMS worksheet
-  const sheet = doc.sheetsByTitle['DBMS']
+  const sheet = doc.sheetsByTitle[subject]
 
-  // Getting all rows
-  const rows = await sheet.getRows()
-  // const date = '30/07'
+  // Getting all cells
+  await sheet.loadCells()
 
   let students = []
 
-  rows.forEach(async (row) => {
-    // if (row.get('Name') !== undefined) console.log(row.get('Name'))
-    if (row.get('Name')) {
-      students.push({ name: row.get('Name'), roll: row.get('Roll No.') })
+  if (currentClass.theory.includes(subject)) {
+    // Subject is theory
+    for (let i = 0; i <= currentClass.lastRoll; i++) {
+      students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
     }
-  })
+
+  } else if (currentClass.labs.includes(subject)) {
+    // Subject is a lab
+    if (currentClass.batches.hasOwnProperty(batch)) {
+      // Valid batch provided
+      for (let i = currentClass.batches[batch].start; i <= currentClass.batches[batch].end; i++) {
+        students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
+      }
+
+    } else {
+      // Invalid batch
+      return res.status(401).send("Invalid request")
+    }
+  } else {
+    // Invalid subject
+    return res.status(401).send("Invalid request")
+  }
 
   res.json(students)
+
 })
 
 app.post('/api/mark_attendance', async (req, res) => {
@@ -195,56 +215,6 @@ app.post('/api/mark_attendance2', async (req, res) => {
   } catch (err) {
     console.log(err.message)
   }
-})
-
-app.get('/api/get_students2', async (req, res) => {
-
-  const { year, div, subject, batch } = req.body
-  const currentClass = config[year][div]
-
-  // Connecting to GDoc api
-  const doc = new GoogleSpreadsheet(
-    currentClass.sheetId,
-    serviceAccountAuth
-  )
-
-  // Loading document info
-  await doc.loadInfo()
-  console.log('TITLE: ', doc.title)
-
-  // Selecting DBMS worksheet
-  const sheet = doc.sheetsByTitle[subject]
-
-  // Getting all cells
-  await sheet.loadCells()
-
-  let students = []
-
-  if (currentClass.theory.includes(subject)) {
-    // Subject is theory
-    for (let i = 0; i <= currentClass.lastRoll; i++) {
-      students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
-    }
-
-  } else if (currentClass.labs.includes(subject)) {
-    // Subject is a lab
-    if (currentClass.batches.hasOwnProperty(batch)) {
-      // Valid batch provided
-      for (let i = currentClass.batches[batch].start; i <= currentClass.batches[batch].end; i++) {
-        students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
-      }
-
-    } else {
-      // Invalid batch
-      return res.status(401).send("Invalid request")
-    }
-  } else {
-    // Invalid subject
-    return res.status(401).send("Invalid request")
-  }
-
-  res.json(students)
-
 })
 
 app.post('/api/get_studentinfo2', async (req, res) => {
