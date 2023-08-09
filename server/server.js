@@ -4,12 +4,14 @@ dotenv.config()
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { JWT } = require('google-auth-library')
 const { DateTime, Settings } = require("luxon");
+// const cors = require("cors")
 
 const { config } = require('./config')
 
 const express = require('express')
 
 const app = express()
+// app.use(cors)
 
 const serviceAccountAuth = new JWT({
   email: process.env.client_email,
@@ -80,15 +82,80 @@ app.get('/api/get_students', async (req, res) => {
 
     } else {
       // Invalid batch
-      return res.status(401).send("Invalid request")
+      return res.status(400).send("Invalid request")
     }
   } else {
     // Invalid subject
-    return res.status(401).send("Invalid request")
+    return res.status(400).send("Invalid request")
   }
 
-
-
   res.json({ entryExists, students })
+})
 
+app.post("/api/mark_attendance", async (req, res) => {
+  console.log("MARK")
+  const { year, div, subject, batch, present_students, reqDate, overwrite } = req.body
+  const currentClass = config[year][div]
+
+  const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
+
+  await doc.loadInfo()
+  console.log(doc.title)
+
+  const sheet = doc.sheetsByTitle[subject]
+
+  // Checking if requested date matches with current date
+  const date = DateTime.now().toFormat("dd'/'MM")
+  if (reqDate !== date) {
+    return res.status(400).send("Invalid request")
+  }
+
+  await sheet.loadHeaderRow()
+  const columnIndex = sheet.headerValues.indexOf(date)
+
+  // const columnIndex = sheet.headerValues.indexOf("10/08")
+  await sheet.loadCells()
+
+  if (currentClass.theory.includes(subject) || currentClass.labs.includes(subject)) {
+    // Sheet present
+
+
+    for (let i = 1; i <= currentClass.lastRoll; i++) {
+      // for (let i = 1; i <= 10; i++) {
+      let currentRoll = sheet.getCell(i, 0).value
+      let currentValue = sheet.getCell(i, columnIndex).value
+      // console.log(currentRoll, currentValue)
+      if (overwrite) {
+        // Setting values directly
+        if (present_students.includes(currentRoll)) {
+          // Present
+          sheet.getCell(i, columnIndex).value = 1
+        } else {
+          // Absent
+          sheet.getCell(i, columnIndex).value = 0
+        }
+      } else {
+        // Increment if present
+        if (present_students.includes(currentRoll)) {
+          // Present
+          if (currentValue === null) {
+            sheet.getCell(i, columnIndex).value = 1
+          } else {
+            sheet.getCell(i, columnIndex).value = currentValue + 1
+          }
+        } else {
+          // Absent
+          if (currentValue === null) {
+            sheet.getCell(i, columnIndex).value = 0
+          }
+        }
+      }
+    }
+
+    await sheet.saveUpdatedCells()
+    res.send("UPDATED")
+
+  } else {
+    return res.status(400).send("Invalid request")
+  }
 })
