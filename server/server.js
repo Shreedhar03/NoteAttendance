@@ -22,34 +22,54 @@ app.listen(8080, () => console.log('Server running'))
 
 app.use(express.json())
 
-// Getting student list
-app.get('/api/get_students', async (req, res) => {
+app.get('/api/get_students2', async (req, res) => {
+
+  const { year, div, subject, batch } = req.body
+  const currentClass = config[year][div]
+
   // Connecting to GDoc api
   const doc = new GoogleSpreadsheet(
-    '1zefff2HDlPHp3Wb8vSLwACa38sAts_YTKWZL2zXfjUY',
+    currentClass.sheetId,
     serviceAccountAuth
   )
+
   // Loading document info
   await doc.loadInfo()
   console.log('TITLE: ', doc.title)
 
   // Selecting DBMS worksheet
-  const sheet = doc.sheetsByTitle['DBMS']
+  const sheet = doc.sheetsByTitle[subject]
 
-  // Getting all rows
-  const rows = await sheet.getRows()
-  // const date = '30/07'
+  // Getting all cells
+  await sheet.loadCells()
 
   let students = []
 
-  rows.forEach(async (row) => {
-    // if (row.get('Name') !== undefined) console.log(row.get('Name'))
-    if (row.get('Name')) {
-      students.push({ name: row.get('Name'), roll: row.get('Roll No.') })
+  if (currentClass.theory.includes(subject)) {
+    // Subject is theory
+    for (let i = 1; i <= currentClass.lastRoll; i++) {
+      students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
     }
-  })
+
+  } else if (currentClass.labs.includes(subject)) {
+    // Subject is a lab
+    if (currentClass.batches.hasOwnProperty(batch)) {
+      // Valid batch provided
+      for (let i = currentClass.batches[batch].start; i <= currentClass.batches[batch].end; i++) {
+        students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
+      }
+
+    } else {
+      // Invalid batch
+      return res.status(401).send("Invalid request")
+    }
+  } else {
+    // Invalid subject
+    return res.status(401).send("Invalid request")
+  }
 
   res.json(students)
+
 })
 
 app.post('/api/mark_attendance', async (req, res) => {
@@ -174,25 +194,120 @@ app.post('/api/get_studentinfo', async (req, res) => {
 app.post('/api/mark_attendance2', async (req, res) => {
   console.log('MARK2')
   try {
-    // Getting parameters from request
-    const { year, div, subject, present_students, date } = req.body
+    const { year, div, subject, batch, present_students, date } = req.body
+    const currentClass = config[year][div]
 
-    // Opening appropriate sheet
+    // Connecting to GDoc api
     const doc = new GoogleSpreadsheet(
-      config[year][div].sheetId,
+      currentClass.sheetId,
       serviceAccountAuth
     )
 
     await doc.loadInfo()
     console.log(doc.title)
-
-    // Mark appropriate attendance
-    // Check if sheet provided is correct
-    //Select appropriate sheet
     const sheet = doc.sheetsByTitle[subject]
 
+    // Get index of date
+    await sheet.loadHeaderRow() // Load header row to get column names
+    const columnIndex = sheet.headerValues.indexOf(date)
 
+    await sheet.loadCells()
+
+    if (currentClass.theory.includes(subject)) {
+      // Subject is theory
+      for (let i = 1; i <= currentClass.lastRoll; i++) {
+
+      }
+
+    } else if (currentClass.labs.includes(subject)) {
+      // Subject is a lab
+      if (currentClass.batches.hasOwnProperty(batch)) {
+        // Valid batch provided
+        for (let i = currentClass.batches[batch].start; i <= currentClass.batches[batch].end; i++) {
+          students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
+        }
+
+      } else {
+        // Invalid batch
+        return res.status(401).send("Invalid request")
+      }
+    } else {
+      // Invalid subject
+      return res.status(401).send("Invalid request")
+    }
+
+    await sheet.saveUpdatedCells()
+    res.send('Attendance Updated')
   } catch (err) {
     console.log(err.message)
   }
+})
+
+app.post('/api/get_studentinfo2', async (req, res) => {
+  console.log('Student request')
+  const { year, div, roll } = req.body
+  const doc = new GoogleSpreadsheet(
+    config[year][div],
+    serviceAccountAuth
+  )
+  await doc.loadInfo()
+  console.log('TITLE: ', doc.title)
+  const sheet = doc.sheetsByTitle['REPORT']
+  await sheet.loadCells()
+
+  // console.log(sheet.getCell(70, 4).effectiveFormat)
+
+  let student_info = {
+    student_roll: sheet.getCell(roll, 0).value,
+    student_name: sheet.getCell(roll, 1).value,
+    total_lectures: 45,
+    attended_lectures: 32,
+    total_labs: 12,
+    attended_labs: 8,
+    theory_distributon: [
+      {
+        sub_code: 'DBMS',
+        sub_total: 52,
+        sub_attended: 38,
+      },
+      {
+        sub_code: 'SPOS',
+        sub_total: 38,
+        sub_attended: 29,
+      },
+      {
+        sub_code: 'CN',
+        sub_total: 49,
+        sub_attended: 41,
+      },
+      {
+        sub_code: 'EL1',
+        sub_total: 42,
+        sub_attended: 22,
+      },
+      {
+        sub_code: 'TOC',
+        sub_total: 42,
+        sub_attended: 40,
+      },
+    ],
+    lab_distribution: [
+      {
+        lab_code: 'DBMSL',
+        lab_total: 12,
+        lab_attended: 10,
+      },
+      {
+        lab_code: 'LP1',
+        lab_total: 12,
+        lab_attended: 8,
+      },
+      {
+        lab_code: 'CNSL',
+        lab_total: 13,
+        lab_attended: 12,
+      },
+    ],
+  }
+  res.json(student_info)
 })
