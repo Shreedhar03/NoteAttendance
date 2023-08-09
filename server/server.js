@@ -4,12 +4,14 @@ dotenv.config()
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { JWT } = require('google-auth-library')
 const { DateTime, Settings } = require("luxon");
+const cors=require('cors')
 
 const { config } = require('./config')
 
 const express = require('express')
 
 const app = express()
+app.use(cors())
 
 const serviceAccountAuth = new JWT({
   email: process.env.client_email,
@@ -17,7 +19,7 @@ const serviceAccountAuth = new JWT({
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 })
 
-app.listen(8080, () => console.log('Server running'))
+app.listen(8080, () => console.log('Server running on 8080'))
 
 app.use(express.json())
 
@@ -26,7 +28,9 @@ Settings.defaultZone = "Asia/Kolkata"
 
 app.get('/api/get_students', async (req, res) => {
 
-  const { year, div, subject, batch } = req.body
+  const { year, div, subject, batch } = req.query
+  console.log(year, div, subject, batch )
+
   const currentClass = config[year][div]
 
   // Connecting to GDoc api

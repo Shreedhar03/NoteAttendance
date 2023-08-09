@@ -7,16 +7,30 @@ import StudentGrid from './StudentGrid'
 import { AppContext } from '../App'
 import Dialog from './Dialog'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const Attendance = () => {
-    const goto=useNavigate()
-    const { students } = useContext(AppContext)
-    const [dialog, setDialog] = useState(true)
+    const goto = useNavigate()
+    const { students, setStudents, formValues } = useContext(AppContext)
+    const [dialog, setDialog] = useState(false)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(true)
     const [presentStudents, setPresentStudents] = useState([])
     const [navShodow, setNavShodow] = useState(false)
     const [selectAll, setSelectAll] = useState(true)
+
+    const fetchStudents = async () => {
+        try {
+            console.log(formValues)
+            const { data } = await axios.get(`http://localhost:8080/api/get_students`,
+                { params: formValues }
+            )
+            setStudents(data.students)
+            // console.log(students)
+        } catch (err) {
+            console.log(err)
+        }
+    }
     window.addEventListener("scroll", () => {
         let positionY = window.pageYOffset
         if (positionY > 95) {
@@ -40,14 +54,15 @@ const Attendance = () => {
     const handleCancel = () => {
         goto('/selection')
     }
-    const handleContinue=()=>{
+    const handleContinue = () => {
         setDialog(false)
     }
     useEffect(() => {
+        fetchStudents()
         setTimeout(() => {
             setLoading(false)
         }, 1000);
-    })
+    }, [])
     return (
 
         <>
@@ -81,20 +96,20 @@ const Attendance = () => {
                                 gridView ?
                                     <div className='grid grid-cols-6 gap-3'>
                                         {students?.map((s, key) => {
-                                            return (<StudentGrid name={s.fullName} key={key} roll={s.rollNo} id={key} setPresentStudents={setPresentStudents} presentStudents={presentStudents} />)
+                                            return (<StudentGrid name={s.name} key={key} roll={s.roll} id={key} setPresentStudents={setPresentStudents} presentStudents={presentStudents} />)
                                         })}
                                     </div>
                                     :
                                     students.map((s, key) => {
-                                        return (<StudentList name={s.fullName} key={key} roll={s.rollNo} id={key} setPresentStudents={setPresentStudents} presentStudents={presentStudents} check={true} />)
+                                        return (<StudentList name={s.name} key={key} roll={s.roll} id={key} setPresentStudents={setPresentStudents} presentStudents={presentStudents} check={true} />)
                                     })
                             }
 
                         </section>
                         <Dialog message="Attendance for this date already exists. Do you wish to continue"
-                         dialog={dialog}
-                         handleCancel={handleCancel}
-                         handleContinue={handleContinue}/>
+                            dialog={dialog}
+                            handleCancel={handleCancel}
+                            handleContinue={handleContinue} />
                     </>
             }
         </>

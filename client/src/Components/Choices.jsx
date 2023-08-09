@@ -5,19 +5,9 @@ import { subjects } from '../../subjects.js'
 import { AppContext } from '../App'
 
 const Choices = () => {
-    const { user, signOutWithGoogle } = useContext(AppContext)
+    const { formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
     const goto = useNavigate()
-    const [formValues, setFormValues] = useState({
-        year: "SE",
-        division: "A",
-        session: "Theory",
-        subject: "DM",
-        labSubject: "FDSL",
-        batch: "S1"
-    })
-    const [theorySubjects, setTheorySubjects] = useState([])
-    const [batches, setBatches] = useState([])
-    const [labSubjects, setLabSubjects] = useState([])
+
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value })
         // console.log("formValues.year",formValues.year)
@@ -54,10 +44,10 @@ const Choices = () => {
                 <div className={`'opacity-10'}`}>
                     <h1 className='text-2xl mb-2'>Division</h1>
                     <div className="flex gap-3">
-                        <Radio handleChange={handleChange} value={formValues.division} label="A" name="division" sm={true} />
-                        <Radio handleChange={handleChange} value={formValues.division} label="B" name="division" sm={true} />
-                        <Radio handleChange={handleChange} value={formValues.division} label="C" name="division" sm={true} />
-                        <Radio handleChange={handleChange} value={formValues.division} label="D" name="division" sm={true} />
+                        <Radio handleChange={handleChange} value={formValues.div} label="A" name="div" sm={true} />
+                        <Radio handleChange={handleChange} value={formValues.div} label="B" name="div" sm={true} />
+                        <Radio handleChange={handleChange} value={formValues.div} label="C" name="div" sm={true} />
+                        <Radio handleChange={handleChange} value={formValues.div} label="D" name="div" sm={true} />
                     </div>
                 </div>
 
