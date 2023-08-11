@@ -4,7 +4,7 @@ dotenv.config()
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { JWT } = require('google-auth-library')
 const { DateTime, Settings } = require("luxon");
-const cors=require('cors')
+const cors = require('cors')
 
 const { config } = require('./config')
 
@@ -12,7 +12,6 @@ const express = require('express')
 
 const app = express()
 app.use(cors())
-
 const serviceAccountAuth = new JWT({
   email: process.env.client_email,
   key: process.env.private_key,
@@ -28,71 +27,220 @@ Settings.defaultZone = "Asia/Kolkata"
 
 app.get('/api/get_students', async (req, res) => {
 
-  const { year, div, subject, batch } = req.query
-  console.log(year, div, subject, batch )
+  try {
 
-  const currentClass = config[year][div]
+    const { year, div, subject, batch } = req.query
+    const currentClass = config[year][div]
 
-  // Connecting to GDoc api
-  const doc = new GoogleSpreadsheet(
-    currentClass.sheetId,
-    serviceAccountAuth
-  )
+    // Connecting to GDoc api
+    const doc = new GoogleSpreadsheet(
+      currentClass.sheetId,
+      serviceAccountAuth
+    )
 
-  // Loading document info
-  await doc.loadInfo()
-  console.log('TITLE: ', doc.title)
+    // Loading document info
+    await doc.loadInfo()
+    console.log('TITLE: ', doc.title)
 
-  const sheet = doc.sheetsByTitle[subject]
+    const sheet = doc.sheetsByTitle[subject]
 
-  const date = DateTime.now().toFormat("dd'/'MM")
-  await sheet.loadHeaderRow() // Load header row to get column names
-  const columnIndex = sheet.headerValues.indexOf(date)
+    const date = DateTime.now().toFormat("dd'/'MM")
+    await sheet.loadHeaderRow() // Load header row to get column names
+    const columnIndex = sheet.headerValues.indexOf(date)
 
-  // Getting all cells
-  await sheet.loadCells()
+    // Getting all cells
+    await sheet.loadCells()
 
-  let students = []
-  let entryExists = false
+    let students = []
+    let entryExists = false
 
-  // Setting value of entryExists based on student count of that day
-  // console.log(columnIndex)
-  if (sheet.getCell(currentClass.lastRoll + 1, columnIndex).value !== 0) {
-    entryExists = true
-  }
-
-  if (currentClass.theory.includes(subject)) {
-    // Subject is theory
-    for (let i = 1; i <= currentClass.lastRoll; i++) {
-      let student = {}
-      // students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
-      student.roll = sheet.getCell(i, 0).value
-      student.name = sheet.getCell(i, 1).value
-      if (entryExists) {
-        student.status = sheet.getCell(i, columnIndex).value > 0 ? true : false
-      }
-      students.push(student)
+    // Setting value of entryExists based on student count of that day
+    // console.log(columnIndex)
+    if (sheet.getCell(currentClass.lastRoll + 1, columnIndex).value !== 0) {
+      entryExists = true
     }
 
-  } else if (currentClass.labs.includes(subject)) {
-    // Subject is a lab
-    if (currentClass.batches.hasOwnProperty(batch)) {
-      // Valid batch provided
-      for (let i = currentClass.batches[batch].start; i <= currentClass.batches[batch].end; i++) {
-        students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
+    if (currentClass.theory.includes(subject)) {
+      // Subject is theory
+      for (let i = 1; i <= currentClass.lastRoll; i++) {
+        let student = {}
+        // students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
+        student.roll = sheet.getCell(i, 0).value
+        student.name = sheet.getCell(i, 1).value
+        if (entryExists) {
+          student.status = sheet.getCell(i, columnIndex).value > 0 ? true : false
+        }
+        students.push(student)
       }
+
+    } else if (currentClass.labs.includes(subject)) {
+      // Subject is a lab
+      if (currentClass.batches.hasOwnProperty(batch)) {
+        // Valid batch provided
+        for (let i = currentClass.batches[batch].start; i <= currentClass.batches[batch].end; i++) {
+          students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
+        }
+
+      } else {
+        // Invalid batch
+        return res.status(400).send("Invalid request")
+      }
+    } else {
+      // Invalid subject
+      return res.status(400).send("Invalid request")
+    }
+
+    res.json({ entryExists, students })
+  } catch (err) { console.log(err.message) }
+})
+
+app.post("/api/mark_attendance", async (req, res) => {
+
+  try {
+    console.log("MARK")
+    const { year, div, subject, batch, present_students, reqDate, overwrite } = req.body
+    const currentClass = config[year][div]
+
+    const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
+
+    await doc.loadInfo()
+    console.log(doc.title)
+
+    const sheet = doc.sheetsByTitle[subject]
+
+    // Checking if requested date matches with current date
+    const date = DateTime.now().toFormat("dd'/'MM")
+    if (reqDate !== date) {
+      return res.status(400).send("Invalid request")
+    }
+
+    await sheet.loadHeaderRow()
+    const columnIndex = sheet.headerValues.indexOf(date)
+
+    // const columnIndex = sheet.headerValues.indexOf("10/08")
+    await sheet.loadCells()
+
+    if (currentClass.theory.includes(subject) || currentClass.labs.includes(subject)) {
+      // Sheet present
+
+
+      for (let i = 1; i <= currentClass.lastRoll; i++) {
+        // for (let i = 1; i <= 10; i++) {
+        let currentRoll = sheet.getCell(i, 0).value
+        let currentValue = sheet.getCell(i, columnIndex).value
+        // console.log(currentRoll, currentValue)
+        if (overwrite) {
+          // Setting values directly
+          if (present_students.includes(currentRoll)) {
+            // Present
+            sheet.getCell(i, columnIndex).value = 1
+          } else {
+            // Absent
+            sheet.getCell(i, columnIndex).value = 0
+          }
+        } else {
+          // Increment if present
+          if (present_students.includes(currentRoll)) {
+            // Present
+            if (currentValue === null) {
+              sheet.getCell(i, columnIndex).value = 1
+            } else {
+              sheet.getCell(i, columnIndex).value = currentValue + 1
+            }
+          } else {
+            // Absent
+            if (currentValue === null) {
+              sheet.getCell(i, columnIndex).value = 0
+            }
+          }
+        }
+      }
+
+      await sheet.saveUpdatedCells()
+      res.send("UPDATED")
 
     } else {
-      // Invalid batch
-      return res.status(401).send("Invalid request")
+      return res.status(400).send("Invalid request")
     }
-  } else {
-    // Invalid subject
-    return res.status(401).send("Invalid request")
-  }
-
-
-
-  res.json({ entryExists, students })
-
+  } catch (err) { console.log(err.message) }
 })
+
+// app.post("/api/mark_attendance2", async (req, res) => {
+
+//   console.log("hello")
+
+//   const { year, div, subject, batch } = req.body.formValues
+//   const { reqDate, overwrite } = req.body
+//   const present_students = req.body.presentStudents
+
+
+//   console.log(year, div, subject, batch, present_students, reqDate, overwrite)
+//   try {
+//     console.log("MARK")
+
+
+//     const currentClass = config[year][div]
+
+//     const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
+
+//     await doc.loadInfo()
+//     console.log(doc.title)
+
+//     const sheet = doc.sheetsByTitle[subject]
+
+//     // Checking if requested date matches with current date
+//     const date = DateTime.now().toFormat("dd'/'MM")
+//     if (reqDate !== date) {
+//       return res.status(400).send("Invalid request")
+//     }
+
+//     await sheet.loadHeaderRow()
+//     const columnIndex = sheet.headerValues.indexOf(date)
+
+//     // const columnIndex = sheet.headerValues.indexOf("10/08")
+//     await sheet.loadCells()
+
+//     if (currentClass.theory.includes(subject) || currentClass.labs.includes(subject)) {
+//       // Sheet present
+
+
+//       for (let i = 1; i <= currentClass.lastRoll; i++) {
+//         // for (let i = 1; i <= 10; i++) {
+//         let currentRoll = sheet.getCell(i, 0).value
+//         let currentValue = sheet.getCell(i, columnIndex).value
+//         // console.log(currentRoll, currentValue)
+//         if (overwrite) {
+//           // Setting values directly
+//           if (present_students.includes(currentRoll)) {
+//             // Present
+//             sheet.getCell(i, columnIndex).value = 1
+//           } else {
+//             // Absent
+//             sheet.getCell(i, columnIndex).value = 0
+//           }
+//         } else {
+//           // Increment if present
+//           if (present_students.includes(currentRoll)) {
+//             // Present
+//             if (currentValue === null) {
+//               sheet.getCell(i, columnIndex).value = 1
+//             } else {
+//               sheet.getCell(i, columnIndex).value = currentValue + 1
+//             }
+//           } else {
+//             // Absent
+//             if (currentValue === null) {
+//               sheet.getCell(i, columnIndex).value = 0
+//             }
+//           }
+//         }
+//       }
+
+//       await sheet.saveUpdatedCells()
+//       res.send("UPDATED")
+
+//     } else {
+//       return res.status(400).send("Invalid request")
+//     }
+//   } catch (err) { console.log(err.message) }
+// })

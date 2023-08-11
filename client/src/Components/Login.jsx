@@ -1,19 +1,17 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import logo from '../assets/logo.svg'
-// import eye_close from '../assets/eye_close.svg'
-// import eye_open from '../assets/eye_open.svg'
 import Google from '../assets/Google.svg'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
 
 const Login = () => {
-    const { userMessage,isLoggedIn, signInWithGoogle, signOutWithGoogle } = useContext(AppContext)
+    const { userMessage,checkLoggedIn, signInWithGoogle, signOutWithGoogle } = useContext(AppContext)
     const goto = useNavigate()
     const [showPass, setShowPass] = useState(false)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
-    const handleSubmit = (e) => {
-        e.preventDefault();
+
+    const handleClick=()=>{
         goto('/selection')
     }
     return (
@@ -32,11 +30,8 @@ const Login = () => {
                 </div>
                 <input type="submit" value="Proceed" className='bg-[var(--primary)] p-4 mt-8 rounded-lg text-white' />
     </form>*/}
-            {  !isLoggedIn ? 
+            {  !checkLoggedIn ? 
             <>
-                {/* <button onClick={signInWithGoogle}>
-                    <img src={Google} alt="" />
-                </button> */}
                 <div onClick={signInWithGoogle} className='flex items-center gap-3 shadow-lg rounded-lg bg-gray-50 px-6 py-3'>
                     <img src={Google} alt="" />
                     <p className=''>Continue with Google</p>
@@ -45,7 +40,7 @@ const Login = () => {
             </>
                 :
                 <div className='flex flex-col gap-3'>
-                <button className='text- bg-slate-700 text-white py-2 px-4 rounded-lg'>Continue &rarr;</button>
+                <button to={'/selection'} className='text- bg-[var(--primary)] text-white py-2 px-4 rounded-lg' onClick={handleClick}>Continue &rarr;</button>
                 <button className='text- bg-red-700 text-white py-2 px-4 rounded-lg' onClick={signOutWithGoogle}>Logout</button>
                 </div>
             }

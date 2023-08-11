@@ -9,15 +9,18 @@ import Dialog from './Dialog'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 const Attendance = () => {
     const goto = useNavigate()
-    const { students, setStudents, formValues } = useContext(AppContext)
-    const [dialog, setDialog] = useState(false)
+    const { students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
+    const [dialog, setDialog] = useState(true)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(true)
-    const [presentStudents, setPresentStudents] = useState([])
     const [navShodow, setNavShodow] = useState(false)
     const [selectAll, setSelectAll] = useState(true)
+    const [date, setDate] = useState(new Date())
+    const [message,setMessage]=useState("Overriding the attendance for today")
 
     const fetchStudents = async () => {
         try {
@@ -25,7 +28,10 @@ const Attendance = () => {
             const { data } = await axios.get(`http://localhost:8080/api/get_students`,
                 { params: formValues }
             )
+            console.log(data)
             setStudents(data.students)
+            setLoading(false)
+
             // console.log(students)
         } catch (err) {
             console.log(err)
@@ -42,8 +48,8 @@ const Attendance = () => {
     })
     const handleSelectAll = () => {
         if (selectAll) {
-            let selectAll = students.map(stud => stud.fullName)
-            console.log(selectAll)
+            let selectAll = students.filter(s => s.name != null).map(stud => stud.roll)
+            // console.log(selectAll)
             setPresentStudents(selectAll)
             setSelectAll(false)
         } else {
@@ -51,17 +57,16 @@ const Attendance = () => {
             setSelectAll(true)
         }
     }
-    const handleCancel = () => {
+    const handleOverride = () => {
         goto('/selection')
     }
-    const handleContinue = () => {
+    const handleUpdate = () => {
         setDialog(false)
     }
     useEffect(() => {
         fetchStudents()
-        setTimeout(() => {
-            setLoading(false)
-        }, 1000);
+        checkAuthState()
+        setDate(new Date())
     }, [])
     return (
 
@@ -78,17 +83,26 @@ const Attendance = () => {
                         <Navbar navShodow={navShodow} setNavShodow={setNavShodow} presentStudents={presentStudents} students={students} />
                         <div className={`flex items-center gap-6 mt-4 px-6 ${dialog && 'opacity-20'}`}>
                             <div className='relative flex items-center justify-center gap-1 border-2 border-black rounded-t-lg h-[60px] w-20'>
-                                <h2 className='text-[45px] font-semibold text-[var(--primary)]'>A</h2>
+                                <h2 className='text-[45px] font-semibold text-[var(--primary)]'>{formValues.div}</h2>
                                 <div className='flex flex-col items-end'>
-                                    <p className='text-sm h-4'>T2</p>
-                                    <p className='text-lg font-semibold h-7'>BE</p>
+                                    <p className='text-sm h-4'>{formValues.session === "Lab" && formValues.batch}</p>
+                                    <p className='text-lg font-semibold h-7'>{formValues.year}</p>
                                 </div>
-                                <div className="absolute bg-black text-white text-xs w-20 py-1 -bottom-5 rounded-b-lg text-center">27 Jul 23</div>
+                                <div className="absolute bg-black text-white text-xs w-20 py-1 -bottom-5 rounded-b-lg text-center">
+                                    {date.getDate()} {months[date.getMonth()]} {date.getFullYear().toString().slice(2)}
+                                </div>
                             </div>
-                            <h2 className='text-3xl font-semibold'>DBMSL</h2>
+                            <h2 className='text-3xl font-semibold'>{formValues.subject}</h2>
                         </div>
                         <section className={`my-8 flex flex-col gap-3 px-6 ${dialog && 'opacity-20'}`}>
                             <div className='self-end flex gap-1 mb-6'>
+                                <div className='relative group'>
+                                    <p className='mr-2 text-gray-600 flex items-center gap-1'><i className='bx bx-info-circle text-xl'></i>{"Overriding"}</p>
+                                    <div className="bg-white shadow-xl absolute w-40 p-2 hidden group-hover:block">
+                                        {message}
+                                    </div>
+
+                                </div>
                                 <button onClick={() => setGridView(!gridView)}><img src={!gridView ? grid : list} className='w-6 h-6' alt="" /></button>
                                 <button className='border-2 border-gray-700 rounded-lg text-sm px-2 py-[2px]' onClick={handleSelectAll}>{selectAll ? 'Select All' : 'Reset'}</button>
                             </div>
@@ -106,10 +120,13 @@ const Attendance = () => {
                             }
 
                         </section>
-                        <Dialog message="Attendance for this date already exists. Do you wish to continue"
+                        <Dialog message="Attendance for this date already exists"
                             dialog={dialog}
-                            handleCancel={handleCancel}
-                            handleContinue={handleContinue} />
+                            handleOverride={handleOverride}
+                            handleUpdate={handleUpdate}
+                            option1={"Override"}
+                            option2={"ExtraLecture🥹"}
+                        />
                     </>
             }
         </>

@@ -19,10 +19,10 @@ const StudentList = (props) => {
     )
   }
   const handleCheck = () => {
-    if (props.presentStudents.includes(props.name)) {
-      props.setPresentStudents(props.presentStudents.filter(e => e !== props.name))
+    if (props.presentStudents.includes(props.roll)) {
+      props.setPresentStudents(props.presentStudents.filter(e => e !== props.roll))
     } else {
-      props.setPresentStudents([...props.presentStudents, props.name])
+      props.setPresentStudents([...props.presentStudents, props.roll])
     }
   }
 
@@ -36,7 +36,7 @@ const StudentList = (props) => {
       {
         props.check && props.name!==null &&
         <label htmlFor={props.id} className={`${'bg-gray-200'} rounded-full h-6 w-6 shadow-inner shadow-gray-500`}>
-          {props.presentStudents.includes(props.name) && <img src={checked} />}
+          {props.presentStudents.includes(props.roll) && <img src={checked} />}
         </label>
       }
       {

@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import { createContext, useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import Login from './Components/Login'
 import Choices from './Components/Choices'
 import Attendance from './Components/Attendance'
@@ -42,16 +42,38 @@ function App() {
   const [batches, setBatches] = useState([])
   const [labSubjects, setLabSubjects] = useState([])
   const [students, setStudents] = useState()
-  const [isLoggedIn, setIsLoggedIn] = useState()
+  const [presentStudents, setPresentStudents] = useState([])
+  // const [isLoggedIn, setIsLoggedIn] = useState()
+  const [checkLoggedIn,setCheckLoggedIn]=useState(false)
   const [user, setUser] = useState('')
   const [userMessage, setUserMessage] = useState('')
+  const goto = useNavigate()
+
+
+  const checkAuthState = () => {
+    onAuthStateChanged(auth, user => {
+      if (user && permittedUsers.includes(user.email)) {
+        // setIsLoggedIn(true)
+        setCheckLoggedIn(true)
+        setUser(user.displayName)
+        setUserMessage("")
+      } else {
+        goto('/')
+        setCheckLoggedIn(false)
+        // setIsLoggedIn(false)
+        // setUserMessage("Login to Continue")
+      }
+    });
+  };
 
   // Function to handle sign-in
   const signInWithGoogle = () => {
     signInWithPopup(auth, provider).then(result => {
       if (!permittedUsers.includes(result.user.email)) {
         setUserMessage("Access Denied")
+        return
       }
+      goto('/selection')
     }).catch(err => {
       console.log("error signing in")
     })
@@ -68,25 +90,18 @@ function App() {
       });
   };
 
-  const checkAuthState = () => {
-    onAuthStateChanged(auth, user => {
-      if (user && permittedUsers.includes(user.email)) {
-        setIsLoggedIn(true)
-        setUser(user.displayName)
-      } else {
-        setIsLoggedIn(false)
-        // setUserMessage("Login to Continue")
-      }
-    });
-  };
-
   useEffect(() => {
     checkAuthState()
     // console.log(import.meta.env.VITE_apiKey)
   }, [])
   return (
     <AppContext.Provider value={{
+      goto,
+      checkAuthState,
+      checkLoggedIn,
       students,
+      presentStudents,
+      setPresentStudents,
       setStudents,
       formValues,
       setFormValues,
@@ -96,22 +111,19 @@ function App() {
       setBatches,
       labSubjects,
       setLabSubjects,
-      isLoggedIn,
       userMessage,
       signInWithGoogle,
       signOutWithGoogle,
       user
     }}>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={isLoggedIn ? <Choices /> : <Login />}></Route>
-          <Route path='/selection' element={isLoggedIn ? <Choices /> : <Login />}></Route>
-          <Route path='/attendance' element={isLoggedIn ? <Attendance /> : <Login />}></Route>
-          <Route path='/feedback' element={isLoggedIn ? <Feedback /> : <Login />}></Route>
-          <Route path='/search' element={isLoggedIn ? <Search /> : <Login />}></Route>
-          <Route path='/student-info/:roll' element={isLoggedIn ? <Student_Info /> : <Login />}></Route>
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Login />}></Route>
+        <Route path='/selection' element={<Choices />}></Route>
+        <Route path='/attendance' element={<Attendance />}></Route>
+        <Route path='/feedback' element={<Feedback />}></Route>
+        <Route path='/search' element={<Search />}></Route>
+        <Route path='/student-info/:roll' element={<Student_Info />}></Route>
+      </Routes>
     </AppContext.Provider>
   )
 }

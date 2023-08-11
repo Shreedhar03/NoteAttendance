@@ -1,8 +1,8 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../App'
 import StudentList from './StudentList'
 const Search = () => {
-  const { students } = useContext(AppContext)
+  const { students,checkAuthState } = useContext(AppContext)
   const [year, setYear] = useState("SE")
   const [division, setDivision] = useState("A")
   const [search, setSearch] = useState("")
@@ -23,6 +23,9 @@ const Search = () => {
       setStudentList(students)
     },1000)
   }
+  useEffect(()=>{
+    checkAuthState()
+  },[])
   return (
     <section className='flex flex-col gap-3 my-8 px-6'>
       <div className='flex gap-4 justify-center'>
@@ -42,7 +45,7 @@ const Search = () => {
         <input type="text" onBlur={handleBlur} placeholder='Search by Roll No. or Name' value={search} className='w-full px-3 py-2 border-2 border-gray-400 rounded-lg' onChange={handleSearch} />
         <div className='flex flex-col gap-2 mt-8'>
           {
-            studentList.map((s, key) => {
+            studentList?.map((s, key) => {
               return (<StudentList key={key} id={key} name={s.fullName} roll={s.rollNo} check={false} />)
             })
           }

@@ -5,7 +5,7 @@ import { subjects } from '../../subjects.js'
 import { AppContext } from '../App'
 
 const Choices = () => {
-    const { formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
+    const {checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
     const goto = useNavigate()
 
     const handleChange = (e) => {
@@ -22,6 +22,9 @@ const Choices = () => {
         setLabSubjects(subjects[formValues.year].lab)
         setBatches(subjects[formValues.year].batches)
     }, [formValues])
+    useEffect(()=>{
+        checkAuthState()
+    },[])
     return (
         <>
             <nav className='px-6 py-3 sticky top-0 bg-white flex justify-between items-center shadow-md'>

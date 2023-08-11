@@ -5,7 +5,7 @@ export const subjects = {
         batches: ["S1","S2","S3"]
     },
     TE: {
-        theory: ["DBMS", "TOC", "CN", "SPOS", "HCI", "IOT", "SPM", "DS"],
+        theory: ["DBMS", "TOC", "CN", "SPOS", "LP1"],
         lab: ["DBMSL", "LP1", "CNSL"],
         batches: ["T1","T2","T3"]
     },

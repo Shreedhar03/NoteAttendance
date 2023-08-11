@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ReportBox from './ReportBox'
 import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../App'
 
 const Student_Info = () => {
     const navigate = useNavigate()
+    const {checkAuthState} = useContext(AppContext)
     const [record, setRecord] = useState({
         roll: window.location.href.split("/").slice(-1)[0],
         name: "Bade Akshay Bhagwan",
@@ -33,6 +35,9 @@ const Student_Info = () => {
             total === 100 ? total : total.toFixed(1)
         )
     }
+    useEffect(()=>{
+        
+    })
     const { totalLectures, totalLecturesAttended, totalPracticals, totalPracticalsAttended } = record
     return (
         <div className='flex flex-col bg-slate-10 px-6 my-6'>
