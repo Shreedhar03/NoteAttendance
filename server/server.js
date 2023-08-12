@@ -28,16 +28,14 @@ Settings.defaultZone = "Asia/Kolkata"
 // Preparing structure from config
 const structure = {}
 for (let key in config) {
-  let year = config[key]
-  for (let div in config[key]) {
-    let ref = config[key][div]
-    year[div] = { theory: ref.theory, labs: ref.labs }
-    if (ref.hasElectives) {
-      ref.electives.forEach(elective => {
-        year[div].theory.push(`${ref.electiveSheetName}: ${elective.name}`)
-      })
-    }
+  let ref = config[key]['A']
+  let year = { theory: ref.theory, labs: ref.labs }
+  if (ref.hasElectives) {
+    ref.electives.forEach(elective => {
+      year.theory.push(`${ref.electiveSheetName}: ${elective.name}`)
+    })
   }
+  year.batches = Object.keys(ref.batches)
   structure[key] = year
 }
 
