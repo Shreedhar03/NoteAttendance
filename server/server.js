@@ -29,8 +29,8 @@ app.get('/api/get_students', async (req, res) => {
 
   try {
 
-    console.log("GETREQ: ", req.query)
     const { year, div, subject, batch } = req.query
+    // const { year, div, subject, batch } = req.body // For debugging
     const currentClass = config[year][div]
 
     // Connecting to GDoc api
@@ -46,6 +46,7 @@ app.get('/api/get_students', async (req, res) => {
     const sheet = doc.sheetsByTitle[subject]
 
     const date = DateTime.now().toFormat("dd'/'MM")
+    // const date = "14/08" // For debugging
     await sheet.loadHeaderRow() // Load header row to get column names
     const columnIndex = sheet.headerValues.indexOf(date)
 
@@ -68,9 +69,7 @@ app.get('/api/get_students', async (req, res) => {
         // students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
         student.roll = sheet.getCell(i, 0).value
         student.name = sheet.getCell(i, 1).value
-        if (entryExists) {
-          student.status = sheet.getCell(i, columnIndex).value > 0 ? true : false
-        }
+        student.status = sheet.getCell(i, columnIndex).value > 0 ? true : false
         students.push(student)
       }
 
@@ -92,7 +91,10 @@ app.get('/api/get_students', async (req, res) => {
     }
 
     res.json({ entryExists, students })
-  } catch (err) { console.log(err.message) }
+  } catch (err) {
+    console.log(err.message)
+    return res.status(400).send("Invalid request")
+  }
 })
 
 app.post("/api/mark_attendance", async (req, res) => {
