@@ -25,6 +25,26 @@ app.use(express.json())
 // Setting default timezone for luxon
 Settings.defaultZone = "Asia/Kolkata"
 
+// Preparing structure from config
+const structure = {}
+for (let key in config) {
+  let ref = config[key]['A']
+  let year = { theory: ref.theory, labs: ref.labs }
+  if (ref.hasElectives) {
+    ref.electives.forEach(elective => {
+      year.theory.push(`${ref.electiveSheetName}: ${elective.name}`)
+    })
+  }
+  year.batches = Object.keys(ref.batches)
+  structure[key] = year
+}
+
+// console.log(structure)
+
+app.get('/api/get_structure', (req, res) => {
+  res.json(structure)
+})
+
 app.get('/api/get_students', async (req, res) => {
 
   try {
