@@ -16,7 +16,7 @@ const config = {
     A: {
       sheetId: '1zefff2HDlPHp3Wb8vSLwACa38sAts_YTKWZL2zXfjUY',
       lastRoll: 79,
-      theory: ['CN', 'DBMS', 'EL1', 'SPOS', 'TOC'],
+      theory: ['CN', 'DBMS', 'ELEC', 'SPOS', 'TOC'],
       labs: ['CNSL', 'DBMSL', 'LP1'],
       disabled: [11],
       batches: {
@@ -47,10 +47,6 @@ const config = {
         {
           name: 'IOT',
           color: bgColors.blue
-        },
-        {
-          name: 'DS',
-          color: bgColors.green
         }
       ]
     },
