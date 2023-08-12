@@ -29,6 +29,7 @@ app.get('/api/get_students', async (req, res) => {
 
   try {
 
+    console.log("GETREQ: ", req.query)
     const { year, div, subject, batch } = req.query
     const currentClass = config[year][div]
 
