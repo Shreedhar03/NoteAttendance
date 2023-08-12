@@ -87,7 +87,7 @@ const Attendance = () => {
                     </div>
                     :
                     <>
-                        <Navbar navShodow={navShodow} setNavShodow={setNavShodow} presentStudents={presentStudents} students={students} />
+                        <Navbar date={date} navShodow={navShodow} setNavShodow={setNavShodow} presentStudents={presentStudents} students={students} />
                         <div className={`flex items-center gap-6 mt-4 px-6 ${dialog && 'opacity-20'}`}>
                             <div className='relative flex items-center justify-center gap-1 border-2 border-black rounded-t-lg h-[60px] w-20'>
                                 <h2 className='text-[45px] font-semibold text-[var(--primary)]'>{formValues.div}</h2>
