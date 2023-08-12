@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const StudentGrid = (props) => {
 
@@ -12,6 +12,10 @@ const StudentGrid = (props) => {
             props.setPresentStudents([...props.presentStudents, props.roll])
         }
     }
+
+    useEffect(()=>{
+        handleCheck()
+    },[])
 
     return (
         <>

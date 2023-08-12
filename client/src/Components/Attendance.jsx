@@ -33,8 +33,11 @@ const Attendance = () => {
             data.entryExists && setEntryExists(true)
             setDialog(data.entryExists)
             setStudents(data.students)
+            const alreadyPresent = data.students.filter(s=>s.status===true).map(e=>{return(e.roll)})
+            setPresentStudents(alreadyPresent)
             setLoading(false)
-
+            console.log("presentStudents",presentStudents)
+            console.log("alreadyPresent",alreadyPresent)
             // console.log(students)
         } catch (err) {
             console.log(err)
