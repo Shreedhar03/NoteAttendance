@@ -1,11 +1,11 @@
 export const subjects = {
     SE: {
         theory: ["DM", "DELD", "OOP", "CG", "FDS"],
-        lab: ["FDSL", "DEL", "OOPCGL"],
+        lab: ["DSL", "DEL", "OOPCGL"],
         batches: ["S1","S2","S3"]
     },
     TE: {
-        theory: ["DBMS", "TOC", "CN", "SPOS", "LP1"],
+        theory: ["DBMS", "TOC", "CN", "SPOS", "EL1"],
         lab: ["DBMSL", "LP1", "CNSL"],
         batches: ["T1","T2","T3"]
     },

@@ -39,12 +39,12 @@ export const AppContext = createContext()
 
 function App() {
   const [formValues, setFormValues] = useState({
-    year: 'SE',
-    div: 'A',
-    session: 'Theory',
-    subject: 'DSA',
-    labSubject: 'DSAL',
-    batch: '1',
+    year: "SE",
+    div: "A",
+    session: "Theory",
+    subject: "DSA",
+    labSubject: "DSAL",
+    batch: "1"
   })
   const [theorySubjects, setTheorySubjects] = useState([])
   const [batches, setBatches] = useState([])
@@ -55,6 +55,8 @@ function App() {
   const [checkLoggedIn, setCheckLoggedIn] = useState(false)
   const [user, setUser] = useState('')
   const [userMessage, setUserMessage] = useState('')
+  const [entryExists, setEntryExists] = useState(false)
+  const [overwrite, setOverwrite] = useState(false)
   const goto = useNavigate()
 
   const checkAuthState = () => {
@@ -104,29 +106,31 @@ function App() {
     // console.log(import.meta.env.VITE_apiKey)
   }, [])
   return (
-    <AppContext.Provider
-      value={{
-        goto,
-        checkAuthState,
-        checkLoggedIn,
-        students,
-        presentStudents,
-        setPresentStudents,
-        setStudents,
-        formValues,
-        setFormValues,
-        theorySubjects,
-        setTheorySubjects,
-        batches,
-        setBatches,
-        labSubjects,
-        setLabSubjects,
-        userMessage,
-        signInWithGoogle,
-        signOutWithGoogle,
-        user,
-      }}
-    >
+    <AppContext.Provider value={{
+      goto,
+      checkAuthState,
+      checkLoggedIn,
+      students,
+      presentStudents,
+      setPresentStudents,
+      setStudents,
+      formValues,
+      setFormValues,
+      theorySubjects,
+      setTheorySubjects,
+      batches,
+      setBatches,
+      labSubjects,
+      setLabSubjects,
+      userMessage,
+      signInWithGoogle,
+      signOutWithGoogle,
+      user,
+      entryExists,
+      setEntryExists,
+      overwrite,
+      setOverwrite
+    }}>
       <Routes>
         <Route path="/" element={<Login />}></Route>
         <Route path="/selection" element={<Choices />}></Route>
