@@ -34,8 +34,8 @@ function App() {
     year: "SE",
     div: "A",
     session: "Theory",
-    subject: "DSA",
-    labSubject: "DSAL",
+    subject: "FDS",
+    labSubject: "DSL",
     batch: "1"
   })
   const [theorySubjects, setTheorySubjects] = useState([])
@@ -44,9 +44,11 @@ function App() {
   const [students, setStudents] = useState()
   const [presentStudents, setPresentStudents] = useState([])
   // const [isLoggedIn, setIsLoggedIn] = useState()
-  const [checkLoggedIn,setCheckLoggedIn]=useState(false)
+  const [checkLoggedIn, setCheckLoggedIn] = useState(false)
   const [user, setUser] = useState('')
   const [userMessage, setUserMessage] = useState('')
+  const [entryExists, setEntryExists] = useState(false)
+  const [overwrite, setOverwrite] = useState(false)
   const goto = useNavigate()
 
 
@@ -114,7 +116,11 @@ function App() {
       userMessage,
       signInWithGoogle,
       signOutWithGoogle,
-      user
+      user,
+      entryExists,
+      setEntryExists,
+      overwrite,
+      setOverwrite
     }}>
       <Routes>
         <Route path='/' element={<Login />}></Route>

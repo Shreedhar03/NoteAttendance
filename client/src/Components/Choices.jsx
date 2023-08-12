@@ -5,7 +5,7 @@ import { subjects } from '../../subjects.js'
 import { AppContext } from '../App'
 
 const Choices = () => {
-    const {checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
+    const { checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
     const goto = useNavigate()
 
     const handleChange = (e) => {
@@ -21,10 +21,16 @@ const Choices = () => {
         setTheorySubjects(subjects[formValues.year].theory)
         setLabSubjects(subjects[formValues.year].lab)
         setBatches(subjects[formValues.year].batches)
-    }, [formValues])
-    useEffect(()=>{
+        setFormValues({
+            ...formValues,
+            subject: subjects[formValues.year].theory[0],
+            labSubject: subjects[formValues.year].lab[0],
+            batch: subjects[formValues.year].batches[0]
+        })
+    }, [formValues.year])
+    useEffect(() => {
         checkAuthState()
-    },[])
+    }, [])
     return (
         <>
             <nav className='px-6 py-3 sticky top-0 bg-white flex justify-between items-center shadow-md'>
@@ -93,7 +99,7 @@ const Choices = () => {
 
 
             </form>
-                {/* <Dialog handleCancel={handleCancel} dialog={dialog} handleSubmit={handleSubmit} message="Entry Already exists for this date. Do You want to continue?" /> */}
+            {/* <Dialog handleCancel={handleCancel} dialog={dialog} handleSubmit={handleSubmit} message="Entry Already exists for this date. Do You want to continue?" /> */}
         </>
 
     )

@@ -4,13 +4,13 @@ import { AppContext } from '../App'
 import axios from 'axios'
 
 const Navbar = (props) => {
-  const { presentStudents,setPresentStudents, formValues } = useContext(AppContext)
+  const { presentStudents,setPresentStudents, formValues,overwrite } = useContext(AppContext)
   const navigate = useNavigate()
   const handleSubmit = async () => {
     console.log("ok")
     try{
       let { data } = await axios.post(`http://localhost:8080/api/mark_attendance2`, {
-        formValues, presentStudents,reqDate:"11/08",overwrite:false
+        formValues, presentStudents,reqDate:"12/08",overwrite
       })
       navigate('/feedback')
       setPresentStudents([])

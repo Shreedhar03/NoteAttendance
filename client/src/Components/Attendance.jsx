@@ -13,22 +13,25 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 const Attendance = () => {
     const goto = useNavigate()
-    const { students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
-    const [dialog, setDialog] = useState(true)
+    const {overwrite,setOverwrite, entryExists, setEntryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
+    const [dialog, setDialog] = useState(entryExists)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(true)
     const [navShodow, setNavShodow] = useState(false)
     const [selectAll, setSelectAll] = useState(true)
     const [date, setDate] = useState(new Date())
-    const [message,setMessage]=useState("Overriding the attendance for today")
+    const [message, setMessage] = useState("Overriding the attendance for today")
 
     const fetchStudents = async () => {
         try {
-            console.log(formValues)
+            // console.log(formValues)
             const { data } = await axios.get(`http://localhost:8080/api/get_students`,
                 { params: formValues }
             )
             console.log(data)
+            console.log("entryExist", data.entryExists)
+            data.entryExists && setEntryExists(true)
+            setDialog(data.entryExists)
             setStudents(data.students)
             setLoading(false)
 
@@ -58,15 +61,19 @@ const Attendance = () => {
         }
     }
     const handleOverride = () => {
-        goto('/selection')
+        setOverwrite(true)
+        setDialog(false)
     }
     const handleUpdate = () => {
+        setOverwrite(false)
         setDialog(false)
     }
     useEffect(() => {
         fetchStudents()
         checkAuthState()
         setDate(new Date())
+        console.log("fetching students...")
+        console.log("entry",entryExists)
     }, [])
     return (
 
@@ -120,13 +127,15 @@ const Attendance = () => {
                             }
 
                         </section>
-                        <Dialog message="Attendance for this date already exists"
-                            dialog={dialog}
-                            handleOverride={handleOverride}
-                            handleUpdate={handleUpdate}
-                            option1={"Override"}
-                            option2={"ExtraLecture🥹"}
-                        />
+                        {   entryExists && 
+                            <Dialog message="Attendance for this date already exists"
+                                dialog={dialog}
+                                handleOverride={handleOverride}
+                                handleUpdate={handleUpdate}
+                                option1={"Override🔥"}
+                                option2={"ExtraLecture🥹"}
+                            />
+                        }
                     </>
             }
         </>
