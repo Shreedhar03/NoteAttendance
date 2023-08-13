@@ -1,26 +1,24 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
+import { AppContext } from '../App'
 
 const StudentGrid = (props) => {
+    const {presentStudents,setPresentStudents}=useContext(AppContext)
 
     const handleCheck = () => {
-        if(props.name===null){
+        if (props.name === null) {
             return
         }
-        if (props.presentStudents.includes(props.roll)) {
-            props.setPresentStudents(props.presentStudents.filter(e => e !== props.roll))
+        if (presentStudents.includes(props.roll)) {
+            setPresentStudents(presentStudents.filter(e => e !== props.roll))
         } else {
-            props.setPresentStudents([...props.presentStudents, props.roll])
+            setPresentStudents([...presentStudents, props.roll])
         }
     }
-
-    useEffect(()=>{
-        handleCheck()
-    },[])
 
     return (
         <>
             {
-                <label htmlFor={props.id} className={`${props.presentStudents.includes(props.roll) ? 'bg-green-500' : 'bg-gray-100'} ${props.name===null && 'bg-white border-slate-200 border'} rounded-lg text-xl h-12 w-12 flex items-center justify-center`}>
+                <label htmlFor={props.id} className={`${presentStudents.includes(props.roll) ? 'bg-green-500' : 'bg-gray-100'} ${props.name === null && 'bg-white border-slate-200 border'} rounded-lg text-xl h-12 w-12 flex items-center justify-center`}>
                     {props.roll.slice(4)}
                 </label>
             }

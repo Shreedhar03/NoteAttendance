@@ -1,13 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Radio from './Radio'
 import { Link, useNavigate } from 'react-router-dom'
-import { subjects } from '../../subjects.js'
 import { AppContext } from '../App'
+import axios from 'axios'
 
 const Choices = () => {
-    const { checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
+    const { getStructure,checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
     const goto = useNavigate()
 
+    const [subjects, setSubjects] = useState({})
+    const fetchStructure = async () => {
+        let { data } = await axios.get(`http://localhost:8080/api/get_structure`)
+        console.log("structure:", data)
+        setSubjects(data)
+        localStorage.setItem('structure', JSON.stringify(data))
+    }
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value })
         // console.log("formValues.year",formValues.year)
@@ -18,19 +25,24 @@ const Choices = () => {
         console.log(formValues)
     }
     useEffect(() => {
-        setTheorySubjects(subjects[formValues.year].theory)
-        setLabSubjects(subjects[formValues.year].lab)
-        setBatches(subjects[formValues.year].batches)
+        setTheorySubjects(getStructure()[formValues.year]["theory"])
+        setLabSubjects(getStructure()[formValues.year]["labs"])
+        setBatches(getStructure()[formValues.year]["batches"])
         setFormValues({
             ...formValues,
-            subject: subjects[formValues.year].theory[0],
-            labSubject: subjects[formValues.year].lab[0],
-            batch: subjects[formValues.year].batches[0]
+            subject: subjects[formValues.year]?.theory[0],
+            labSubject: subjects[formValues.year]?.labs[0],
+            batch: subjects[formValues.year]?.batches[0]
         })
-    }, [formValues.year])
+        console.log("subjects",subjects)
+    }, [formValues.year,formValues.div])
     useEffect(() => {
+        fetchStructure()
         checkAuthState()
     }, [])
+    // useEffect(()=>{
+    //     localStorage.setItem('structure', JSON.stringify(subjects))
+    // },[formValues])
     return (
         <>
             <nav className='px-6 py-3 sticky top-0 bg-white flex justify-between items-center shadow-md'>
@@ -70,7 +82,7 @@ const Choices = () => {
                         formValues.session === "Practical" &&
                         <select name="labSubject" id="labSubject" onChange={handleChange} value={formValues.labSubject} required className='p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
                             {
-                                labSubjects.map((lab, key) => {
+                                labSubjects?.map((lab, key) => {
                                     return <option value={lab} key={key} className='py-2'>{lab}</option>
                                 })
                             }
@@ -79,13 +91,13 @@ const Choices = () => {
                     {
                         formValues.session === "Theory" ?
                             <select name="subject" id="subject" onChange={handleChange} value={formValues.subject} required className='p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
-                                {theorySubjects.map((subject, key) => {
+                                {theorySubjects?.map((subject, key) => {
                                     return <option key={key} value={subject} className='py-2'>{subject}</option>
                                 })}
                             </select>
                             :
                             <select name="batch" id="batch" onChange={handleChange} value={formValues.batch} required className='ml-4 p-3 rounded-lg focus:outline-none bg-inherit border border-[var(--primary)]'>
-                                {batches.map((subject, key) => {
+                                {batches?.map((subject, key) => {
                                     return <option key={key} value={subject} className='py-2'>{subject}</option>
                                 })}
                             </select>

@@ -9,7 +9,7 @@ import {
   browserLocalPersistence,
 } from 'firebase/auth'
 import { createContext, useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import Login from './Components/Login'
 import Choices from './Components/Choices'
 import Attendance from './Components/Attendance'
@@ -37,21 +37,55 @@ const provider = new GoogleAuthProvider()
 const permittedUsers = ['urawane03@gmail.com', 'yash25.j@gmail.com']
 export const AppContext = createContext()
 
-function App() {
-  const [formValues, setFormValues] = useState({
-    year: "SE",
+const getStudents = () => {
+  return JSON.parse(localStorage.getItem('presentStudents')) || []
+}
+const getFormValues = () => {
+  return JSON.parse(localStorage.getItem('formValues')) || {
+    year: "TE",
     div: "A",
     session: "Theory",
     subject: "DSA",
     labSubject: "DSAL",
     batch: "1"
-  })
-  const [theorySubjects, setTheorySubjects] = useState([])
-  const [batches, setBatches] = useState([])
-  const [labSubjects, setLabSubjects] = useState([])
+  }
+}
+const getStructure = () => {
+  return JSON.parse(localStorage.getItem("structure")) ||
+  {
+    "TE": {
+      "theory": [
+        "CN",
+        "DBMS",
+        "ELEC",
+        "SPOS",
+        "TOC",
+        "EL1: HCI",
+        "EL1: SPM",
+        "EL1: IOT"
+      ],
+      "labs": [
+        "CNSL",
+        "DBMSL",
+        "LP1"
+      ],
+      "batches": [
+        "1",
+        "2",
+        "3"
+      ]
+    }
+  }
+}
+
+function App() {
+  const [formValues, setFormValues] = useState(getFormValues)
+  const [theorySubjects, setTheorySubjects] = useState(getStructure()[formValues.year]["theory"])
+  const [batches, setBatches] = useState(getStructure()[formValues.year]["batches"])
+  const [labSubjects, setLabSubjects] = useState(getStructure()[formValues.year]["labs"])
   const [students, setStudents] = useState()
-  const [presentStudents, setPresentStudents] = useState([])
-  // const [isLoggedIn, setIsLoggedIn] = useState()
+  const [presentStudents, setPresentStudents] = useState(getStudents())
+  const [submitted, setSubmitted] = useState(false)
   const [checkLoggedIn, setCheckLoggedIn] = useState(false)
   const [user, setUser] = useState('')
   const [userMessage, setUserMessage] = useState('')
@@ -103,11 +137,18 @@ function App() {
 
   useEffect(() => {
     checkAuthState()
-    // console.log(import.meta.env.VITE_apiKey)
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('formValues', JSON.stringify(formValues))
+  }, [formValues])
   return (
     <AppContext.Provider value={{
+      getStructure,
+      getStudents,
       goto,
+      submitted,
+      setSubmitted,
       checkAuthState,
       checkLoggedIn,
       students,

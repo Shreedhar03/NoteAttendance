@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import checked from '../assets/checked.svg'
 import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../App'
 
 const StudentList = (props) => {
+  const {presentStudents,setPresentStudents}=useContext(AppContext)
   const navigate = useNavigate()
 
   const newName = (name) => {
@@ -19,10 +21,10 @@ const StudentList = (props) => {
     )
   }
   const handleCheck = () => {
-    if (props.presentStudents.includes(props.roll)) {
-      props.setPresentStudents(props.presentStudents.filter(e => e !== props.roll))
+    if (presentStudents.includes(props.roll)) {
+      setPresentStudents(presentStudents.filter(e => e !== props.roll))
     } else {
-      props.setPresentStudents([...props.presentStudents, props.roll])
+      setPresentStudents([...presentStudents, props.roll])
     }
   }
 
@@ -36,7 +38,7 @@ const StudentList = (props) => {
       {
         props.check && props.name!==null &&
         <label htmlFor={props.id} className={`${'bg-gray-200'} rounded-full h-6 w-6 shadow-inner shadow-gray-500`}>
-          {props.presentStudents.includes(props.roll) && <img src={checked} />}
+          {presentStudents.includes(props.roll) && <img src={checked} />}
         </label>
       }
       {
