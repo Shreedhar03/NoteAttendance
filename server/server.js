@@ -121,7 +121,10 @@ app.post("/api/mark_attendance", async (req, res) => {
 
   try {
     console.log("MARK")
-    const { year, div, subject, batch, present_students, reqDate, overwrite } = req.body
+    const { year, div, subject, batch, present_students, reqDate, overwrite } = req.body // For debugging
+    // const { year, div, subject, batch } = req.body.formValues
+    // const { reqDate, overwrite } = req.body
+    // const present_students = req.body.presentStudents
     const currentClass = config[year][div]
 
     const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
@@ -145,9 +148,19 @@ app.post("/api/mark_attendance", async (req, res) => {
 
     if (currentClass.theory.includes(subject) || currentClass.labs.includes(subject)) {
       // Sheet present
+      // Set limits for loop
+      let startLimit = 1
+      let endLimit = currentClass.lastRoll
 
+      if (currentClass.labs.includes(subject)) {
+        // Set limits according to batch
+        startLimit = currentClass.batches[batch].start
+        endLimit = currentClass.batches[batch].end
+      }
 
-      for (let i = 1; i <= currentClass.lastRoll; i++) {
+      console.log(startLimit, endLimit)
+
+      for (let i = startLimit; i <= endLimit; i++) {
         // for (let i = 1; i <= 10; i++) {
         let currentRoll = sheet.getCell(i, 0).value
         let currentValue = sheet.getCell(i, columnIndex).value
@@ -187,83 +200,3 @@ app.post("/api/mark_attendance", async (req, res) => {
     }
   } catch (err) { console.log(err.message) }
 })
-
-// app.post("/api/mark_attendance2", async (req, res) => {
-
-//   console.log("hello")
-
-//   const { year, div, subject, batch } = req.body.formValues
-//   const { reqDate, overwrite } = req.body
-//   const present_students = req.body.presentStudents
-
-
-//   console.log(year, div, subject, batch, present_students, reqDate, overwrite)
-//   try {
-//     console.log("MARK")
-
-
-//     const currentClass = config[year][div]
-
-//     const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
-
-//     await doc.loadInfo()
-//     console.log(doc.title)
-
-//     const sheet = doc.sheetsByTitle[subject]
-
-//     // Checking if requested date matches with current date
-//     const date = DateTime.now().toFormat("dd'/'MM")
-//     if (reqDate !== date) {
-//       return res.status(400).send("Invalid request")
-//     }
-
-//     await sheet.loadHeaderRow()
-//     const columnIndex = sheet.headerValues.indexOf(date)
-
-//     // const columnIndex = sheet.headerValues.indexOf("10/08")
-//     await sheet.loadCells()
-
-//     if (currentClass.theory.includes(subject) || currentClass.labs.includes(subject)) {
-//       // Sheet present
-
-
-//       for (let i = 1; i <= currentClass.lastRoll; i++) {
-//         // for (let i = 1; i <= 10; i++) {
-//         let currentRoll = sheet.getCell(i, 0).value
-//         let currentValue = sheet.getCell(i, columnIndex).value
-//         // console.log(currentRoll, currentValue)
-//         if (overwrite) {
-//           // Setting values directly
-//           if (present_students.includes(currentRoll)) {
-//             // Present
-//             sheet.getCell(i, columnIndex).value = 1
-//           } else {
-//             // Absent
-//             sheet.getCell(i, columnIndex).value = 0
-//           }
-//         } else {
-//           // Increment if present
-//           if (present_students.includes(currentRoll)) {
-//             // Present
-//             if (currentValue === null) {
-//               sheet.getCell(i, columnIndex).value = 1
-//             } else {
-//               sheet.getCell(i, columnIndex).value = currentValue + 1
-//             }
-//           } else {
-//             // Absent
-//             if (currentValue === null) {
-//               sheet.getCell(i, columnIndex).value = 0
-//             }
-//           }
-//         }
-//       }
-
-//       await sheet.saveUpdatedCells()
-//       res.send("UPDATED")
-
-//     } else {
-//       return res.status(400).send("Invalid request")
-//     }
-//   } catch (err) { console.log(err.message) }
-// })
