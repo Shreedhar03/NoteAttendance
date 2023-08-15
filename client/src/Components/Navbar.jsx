@@ -17,6 +17,7 @@ const Navbar = (props) => {
         formValues, presentStudents, reqDate, overwrite
       })
       setPresentStudents([])
+      localStorage.removeItem('presentStudents')
       setSubmitted(true)
       console.log(data)
     } catch (err) {
