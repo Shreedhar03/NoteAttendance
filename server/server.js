@@ -240,3 +240,36 @@ app.post("/api/mark_attendance", async (req, res) => {
     res.send("ERR")
   }
 })
+
+
+app.get('/api/search_students', async (req, res) => {
+  const { year, div } = req.query
+  // Preliminary checks
+  // Uses structure declared above to compare requested subject string
+  if (!config.hasOwnProperty(year)) {
+    console.log("Invalid year provided", year)
+    return res.status(400).send("Invalid request")
+  }
+  if (!config[year].hasOwnProperty(div)) {
+    console.log("Invalid division provided: ", div)
+    return res.status(400).send("Invalid request")
+  }
+
+  const currentClass = config[year][div]
+  const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
+  await doc.loadInfo()
+
+  const sheet = doc.sheetsByTitle[currentClass.theory[0]]
+  await sheet.loadCells()
+
+  let students = []
+
+  // Add student object to array if name not null
+  for (let i = 1; i <= currentClass.lastRoll; i++) {
+    if (sheet.getCell(i, 1).value !== null) {
+      students.push({roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value})
+    }
+  }
+
+  res.json(students)
+})
