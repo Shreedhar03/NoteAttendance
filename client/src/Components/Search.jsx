@@ -1,8 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AppContext } from '../App'
 import StudentList from './StudentList'
+import axios from 'axios'
 const Search = () => {
-  const { students,checkAuthState } = useContext(AppContext)
+  const { checkAuthState } = useContext(AppContext)
+  const [students, setStudents] = useState([{ roll: "TCOA01", name: "Shreedhar Deodatta Urawane" }])
   const [year, setYear] = useState("SE")
   const [division, setDivision] = useState("A")
   const [search, setSearch] = useState("")
@@ -11,7 +13,7 @@ const Search = () => {
     let tempStud = []
     setSearch(e.target.value)
     students.forEach(stu => {
-      if (stu.fullName.includes(search)) {
+      if (stu.name.includes(search)) {
         tempStud.push(stu)
       }
     })
@@ -19,13 +21,23 @@ const Search = () => {
     // console.log(studentList)
   }
   const handleBlur = () => {
-    setTimeout(()=>{
+    setTimeout(() => {
       setStudentList(students)
-    },1000)
+    }, 1000)
   }
-  useEffect(()=>{
+  const fetchStudents = async () => {
+    const values = { year, division }
+    let { data } = await axios.get(`http://localhost:8080/api/search-students`,
+      { params: values }
+    )
+    console.log(data.students)
+    setStudents(data.students)
+    setStudentList(data.students)
+  }
+  useEffect(() => {
+    fetchStudents()
     checkAuthState()
-  },[])
+  }, [])
   return (
     <section className='flex flex-col gap-3 my-8 px-6'>
       <div className='flex gap-4 justify-center'>
@@ -38,15 +50,16 @@ const Search = () => {
           <option value="A">A</option>
           <option value="B">B</option>
           <option value="C">C</option>
+          <option value="C">D</option>
         </select>
       </div>
 
       <form>
-        <input type="text" onBlur={handleBlur} placeholder='Search by Roll No. or Name' value={search} className='w-full px-3 py-2 border-2 border-gray-400 rounded-lg' onChange={handleSearch} />
+        <input type="text" onBlur={handleBlur} placeholder='Search by student Name' value={search} className='w-full px-3 py-2 border-2 border-gray-400 rounded-lg focus:outline-none' onChange={handleSearch} />
         <div className='flex flex-col gap-2 mt-8'>
           {
             studentList?.map((s, key) => {
-              return (<StudentList key={key} id={key} name={s.fullName} roll={s.rollNo} check={false} />)
+              return (<StudentList key={key} id={key} name={s.name} roll={s.roll} check={false} />)
             })
           }
         </div>
