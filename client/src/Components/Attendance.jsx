@@ -6,15 +6,14 @@ import list from '../assets/list.svg'
 import StudentGrid from './StudentGrid'
 import { AppContext } from '../App'
 import Dialog from './Dialog'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import Loader from './Loader'
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const Attendance = () => {
-    const goto = useNavigate()
-    const {overwrite,setOverwrite, entryExists, setEntryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
-    const [dialog, setDialog] = useState(entryExists)
+    const { getStudents, setOverwrite, entryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
+    const [dialog, setDialog] = useState(false)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(true)
     const [navShodow, setNavShodow] = useState(false)
@@ -24,18 +23,17 @@ const Attendance = () => {
 
     const fetchStudents = async () => {
         try {
-            // console.log(formValues)
             const { data } = await axios.get(`http://localhost:8080/api/get_students`,
                 { params: formValues }
             )
-            console.log(data)
             console.log("entryExist", data.entryExists)
-            data.entryExists && setEntryExists(true)
             setDialog(data.entryExists)
             setStudents(data.students)
+            const alreadyPresent = data.students.filter(s => s.status === true).map(e => { return (e.roll) })
+            console.log("alreadyPresent", alreadyPresent)
+            // data.entryExists && console.log("entry check---------")  && console.log("hello","presentStudents") && setPresentStudents(alreadyPresent)
+            data.entryExists && setPresentStudents(alreadyPresent)
             setLoading(false)
-
-            // console.log(students)
         } catch (err) {
             console.log(err)
         }
@@ -73,18 +71,20 @@ const Attendance = () => {
         checkAuthState()
         setDate(new Date())
         console.log("fetching students...")
-        console.log("entry",entryExists)
+        console.log("entry", entryExists)
     }, [])
+    useEffect(() => {
+        console.log("presentStudents from Attendance.jsx",presentStudents)
+        localStorage.setItem('presentStudents', JSON.stringify(presentStudents))
+        console.log(JSON.parse(localStorage.getItem("presentStudents")).length)
+    }, [presentStudents])
+
     return (
 
         <>
             {
                 loading ?
-                    <div className='flex h-screen gap-4 items-center justify-center'>
-                        <div className='w-7 h-7 bg-[var(--primary)] rounded-full animate-ping'></div>
-                        <div className='w-7 h-7 bg-[var(--primary)] rounded-full animate-ping'></div>
-                        <div className='w-7 h-7 bg-[var(--primary)] rounded-full animate-ping'></div>
-                    </div>
+                    <Loader />
                     :
                     <>
                         <Navbar date={date} navShodow={navShodow} setNavShodow={setNavShodow} presentStudents={presentStudents} students={students} />
@@ -115,19 +115,19 @@ const Attendance = () => {
                             </div>
                             {
                                 gridView ?
-                                    <div className='grid grid-cols-6 gap-3'>
+                                    <div className='grid grid-cols-5 gap-4'>
                                         {students?.map((s, key) => {
-                                            return (<StudentGrid name={s.name} key={key} roll={s.roll} id={key} setPresentStudents={setPresentStudents} presentStudents={presentStudents} />)
+                                            return (<StudentGrid name={s.name} key={key} roll={s.roll} id={key} />)
                                         })}
                                     </div>
                                     :
                                     students.map((s, key) => {
-                                        return (<StudentList name={s.name} key={key} roll={s.roll} id={key} setPresentStudents={setPresentStudents} presentStudents={presentStudents} check={true} />)
+                                        return (<StudentList name={s.name} key={key} roll={s.roll} id={key} check={true} />)
                                     })
                             }
 
                         </section>
-                        {   entryExists && 
+                        {dialog &&
                             <Dialog message="Attendance for this date already exists"
                                 dialog={dialog}
                                 handleOverride={handleOverride}
