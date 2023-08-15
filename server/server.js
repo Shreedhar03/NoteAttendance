@@ -26,9 +26,10 @@ app.use(express.json())
 Settings.defaultZone = "Asia/Kolkata"
 
 // Preparing structure from config
+
 const structure = {}
 for (let key in config) {
-  let ref = config[key]['A']
+  let ref = JSON.parse(JSON.stringify(config[key]['A']))
   let year = { theory: ref.theory, labs: ref.labs }
   if (ref.hasElectives) {
     ref.electives.forEach(elective => {
@@ -38,7 +39,6 @@ for (let key in config) {
   year.batches = Object.keys(ref.batches)
   structure[key] = year
 }
-
 // console.log(structure)
 
 app.get('/api/get_structure', (req, res) => {
@@ -267,9 +267,98 @@ app.get('/api/search_students', async (req, res) => {
   // Add student object to array if name not null
   for (let i = 1; i <= currentClass.lastRoll; i++) {
     if (sheet.getCell(i, 1).value !== null) {
-      students.push({roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value})
+      students.push({ roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value })
     }
   }
 
   res.json(students)
+})
+
+app.post('/api/get_report', async (req, res) => {
+  console.log("REPORT")
+  console.log(JSON.stringify(config))
+  try {
+    const { year, div, roll } = req.body
+    // Preliminary checks
+    if (!config.hasOwnProperty(year)) {
+      console.log("Invalid year provided", year)
+      return res.status(400).send("Invalid request")
+    }
+    if (!config[year].hasOwnProperty(div)) {
+      console.log("Invalid division provided: ", div)
+      return res.status(400).send("Invalid request")
+    }
+
+    // No. of rows above 1st roll no - 1
+    const OFFSET = 1
+    const currentRoll = parseInt(roll.slice(4))
+    console.log(currentRoll)
+    const currentClass = config[year][div]
+
+    if (!(currentRoll >= 0 || currentRoll <= currentClass.lastRoll)) {
+      console.log("Invalid roll no. received")
+      return res.status(400).send("Invalid request")
+    }
+
+    const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
+    await doc.loadInfo()
+
+    const sheet = doc.sheetsByTitle['REPORT']
+    await sheet.loadHeaderRow(2)
+    await sheet.loadCells()
+
+    let report = {}
+
+    // Adding overalls
+    report.roll = sheet.getCell(currentRoll+OFFSET, 0).value
+    report.name = sheet.getCell(currentRoll+OFFSET, 1).value
+    report.overall = sheet.getCell(currentRoll+OFFSET, sheet.headerValues.indexOf('OVERALL')).formattedValue
+    report.theory = sheet.getCell(currentRoll+OFFSET, sheet.headerValues.indexOf('THEORY')).formattedValue
+    report.labs = sheet.getCell(currentRoll+OFFSET, sheet.headerValues.indexOf('LABS')).formattedValue
+
+    // Adding distribution
+    let theoryDist = []
+    currentClass.theory.forEach(sub => {
+      let colIndex = sheet.headerValues.indexOf(sub)
+      theoryDist.push(
+        {
+          title: sub,
+          percentage: sheet.getCell(currentRoll+OFFSET, colIndex+1).formattedValue,
+          attended: sheet.getCell(currentRoll+OFFSET, colIndex).formattedValue,
+          outOf: sheet.getCell(currentClass.lastRoll+OFFSET+1, colIndex).formattedValue
+        }
+      )
+    })
+    report.theoryDist = theoryDist
+
+    // Adding elective info if present
+    if (currentClass.hasElectives) {
+      let colIndex = sheet.headerValues.indexOf(currentClass.electiveSheetName)
+      theoryDist.push(
+        {
+          title: currentClass.electiveSheetName,
+          percentage: sheet.getCell(currentRoll+OFFSET, colIndex+1).formattedValue
+        }
+      )
+    }
+
+    let labsDist = []
+    currentClass.labs.forEach(lab => {
+      let colIndex = sheet.headerValues.indexOf(lab)
+      labsDist.push(
+        {
+          title: lab,
+          percentage: sheet.getCell(currentRoll+OFFSET, colIndex+1).formattedValue
+        }
+      )
+    })
+    report.labsDist = labsDist
+
+    console.log("SUCCESS")
+    res.json(report)
+    
+  } catch (err) {
+    console.log(err.message)
+    res.status(400).send("Invalid request")
+  }
 })
