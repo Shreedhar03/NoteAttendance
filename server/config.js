@@ -16,19 +16,19 @@ const config = {
     A: {
       sheetId: '1zefff2HDlPHp3Wb8vSLwACa38sAts_YTKWZL2zXfjUY',
       lastRoll: 79,
-      theory: ['CN', 'DBMS', 'ELEC', 'SPOS', 'TOC'],
+      theory: ['CN', 'DBMS', 'SPOS', 'TOC'],
       labs: ['CNSL', 'DBMSL', 'LP1'],
-      disabled: [11],
+      disabled: ["TCOA11"],
       batches: {
-        1: {
+        "1": {
           start: 1,
           end: 26,
         },
-        2: {
+        "2": {
           start: 27,
           end: 52,
         },
-        3: {
+        "3": {
           start: 53,
           end: 79,
         },

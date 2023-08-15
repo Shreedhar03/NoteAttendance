@@ -118,85 +118,158 @@ app.get('/api/get_students', async (req, res) => {
 })
 
 app.post("/api/mark_attendance", async (req, res) => {
-
+  console.log("MARKING ATTENDANCE")
   try {
-    console.log("MARK")
-    const { year, div, subject, batch, present_students, reqDate, overwrite } = req.body // For debugging
-    // const { year, div, subject, batch } = req.body.formValues
-    // const { reqDate, overwrite } = req.body
-    // const present_students = req.body.presentStudents
-    const currentClass = config[year][div]
+    // Getting data from request
+    const { year, div, subject, batch, present_students, req_date, overwrite = false } = req.body
 
-    const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
-
-    await doc.loadInfo()
-    console.log(doc.title)
-
-    const sheet = doc.sheetsByTitle[subject]
-
-    // Checking if requested date matches with current date
-    const date = DateTime.now().toFormat("dd'/'MM")
-    if (reqDate !== date) {
+    // Preliminary checks
+    // Uses structure declared above to compare requested subject string
+    if (!config.hasOwnProperty(year)) {
+      console.log("Invalid year provided", year)
       return res.status(400).send("Invalid request")
     }
+    if (!config[year].hasOwnProperty(div)) {
+      console.log("Invalid division provided: ", div)
+      return res.status(400).send("Invalid request")
+    }
+    if (!structure[year].theory.includes(subject) && !structure[year].labs.includes(subject)) {
+      console.log("Invalid subject provided: ", subject)
+      return res.status(400).send("Invalid request")
+    }
+    if (!structure[year].batches.includes(batch)) {
+      console.log("Invalid batch provided: ", batch)
+      return res.status(400).send("Invalid request")
+    }
+    const date = DateTime.now().toFormat("dd'/'MM")
+    if (req_date !== date) {
+      console.log("Provided date not the current one: ", req_date, " Expected: ", date)
+      return res.status(400).send("Invalid request")
+    }
+
+    const currentClass = config[year][div]
+    let electiveFlag = false
+    let currentElective = ""
+    let currentElectiveColor = {}
+    if (currentClass.hasElectives && subject.includes(currentClass.electiveSheetName)) {
+      electiveFlag = true
+    }
+    if (electiveFlag) {
+      currentClass.electives.forEach(el => {
+        if (subject.includes(el.name)) {
+          currentElective = el.name
+          currentElectiveColor = el.color
+        }
+      })
+    }
+
+    console.log(currentElective)
+
+    const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
+    await doc.loadInfo()
+    const sheet = electiveFlag ? doc.sheetsByTitle[currentClass.electiveSheetName] : doc.sheetsByTitle[subject]
+
+    console.log(currentClass.electiveSheetName, subject)
 
     await sheet.loadHeaderRow()
     const columnIndex = sheet.headerValues.indexOf(date)
+    if (columnIndex === -1) {
+      console.log("Date not found in sheet: ", date, subject)
+      res.status(400).send("Invalid request")
+    }
 
-    // const columnIndex = sheet.headerValues.indexOf("10/08")
     await sheet.loadCells()
 
-    if (currentClass.theory.includes(subject) || currentClass.labs.includes(subject)) {
-      // Sheet present
-      // Set limits for loop
-      let startLimit = 1
-      let endLimit = currentClass.lastRoll
+    let startLimit = 1
+    let endLimit = currentClass.lastRoll
 
-      if (currentClass.labs.includes(subject)) {
-        // Set limits according to batch
-        startLimit = currentClass.batches[batch].start
-        endLimit = currentClass.batches[batch].end
+    if (currentClass.labs.includes(subject)) {
+      startLimit = currentClass.batches[batch].start
+      endLimit = currentClass.batches[batch].end
+    }
+
+    for (let i = startLimit; i <= endLimit; i++) {
+      let currentRoll = sheet.getCell(i, 0).value
+      let currentValue = sheet.getCell(i, columnIndex).value
+
+      // Skipping disabled roll nos.
+      if (currentClass.disabled.includes(currentRoll)) {
+        continue
       }
 
-      console.log(startLimit, endLimit)
-
-      for (let i = startLimit; i <= endLimit; i++) {
-        // for (let i = 1; i <= 10; i++) {
-        let currentRoll = sheet.getCell(i, 0).value
-        let currentValue = sheet.getCell(i, columnIndex).value
-        // console.log(currentRoll, currentValue)
-        if (overwrite) {
-          // Setting values directly
-          if (present_students.includes(currentRoll)) {
-            // Present
-            sheet.getCell(i, columnIndex).value = 1
-          } else {
-            // Absent
-            sheet.getCell(i, columnIndex).value = 0
-          }
-        } else {
-          // Increment if present
-          if (present_students.includes(currentRoll)) {
-            // Present
-            if (currentValue === null) {
-              sheet.getCell(i, columnIndex).value = 1
-            } else {
-              sheet.getCell(i, columnIndex).value = currentValue + 1
-            }
-          } else {
-            // Absent
-            if (currentValue === null) {
-              sheet.getCell(i, columnIndex).value = 0
-            }
-          }
+      // If elective, skip non-relevant students
+      if (electiveFlag) {
+        if (JSON.stringify(sheet.getCell(i, 1).backgroundColor) !== JSON.stringify(currentElectiveColor)) {
+          console.log("PASSED")
+          continue
         }
       }
 
-      await sheet.saveUpdatedCells()
-      res.send("UPDATED")
-
-    } else {
-      return res.status(400).send("Invalid request")
+      if (overwrite) {
+        // Setting values directly
+        if (present_students.includes(currentRoll)) {
+          // Present
+          sheet.getCell(i, columnIndex).value = 1
+        } else {
+          // Absent
+          sheet.getCell(i, columnIndex).value = 0
+        }
+      } else {
+        // Increment if present
+        if (present_students.includes(currentRoll)) {
+          // Present
+          if (currentValue === null) {
+            sheet.getCell(i, columnIndex).value = 1
+          } else {
+            sheet.getCell(i, columnIndex).value = currentValue + 1
+          }
+        } else {
+          // Absent
+          if (currentValue === null) {
+            sheet.getCell(i, columnIndex).value = 0
+          }
+        }
+      }
     }
-  } catch (err) { console.log(err.message) }
+
+    await sheet.saveUpdatedCells()
+    res.send("SUCCESS")
+
+  } catch (err) {
+    console.log(err.message)
+    res.send("ERR")
+  }
+})
+
+
+app.get('/api/search_students', async (req, res) => {
+  const { year, div } = req.query
+  // Preliminary checks
+  // Uses structure declared above to compare requested subject string
+  if (!config.hasOwnProperty(year)) {
+    console.log("Invalid year provided", year)
+    return res.status(400).send("Invalid request")
+  }
+  if (!config[year].hasOwnProperty(div)) {
+    console.log("Invalid division provided: ", div)
+    return res.status(400).send("Invalid request")
+  }
+
+  const currentClass = config[year][div]
+  const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
+  await doc.loadInfo()
+
+  const sheet = doc.sheetsByTitle[currentClass.theory[0]]
+  await sheet.loadCells()
+
+  let students = []
+
+  // Add student object to array if name not null
+  for (let i = 1; i <= currentClass.lastRoll; i++) {
+    if (sheet.getCell(i, 1).value !== null) {
+      students.push({roll: sheet.getCell(i, 0).value, name: sheet.getCell(i, 1).value})
+    }
+  }
+
+  res.json(students)
 })
