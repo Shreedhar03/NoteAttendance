@@ -13,8 +13,8 @@ const Navbar = (props) => {
     navigate('/feedback')
     console.log("ok")
     try {
-      let { data } = await axios.post(`http://localhost:8080/api/mark_attendance`, {
-        formValues, presentStudents, reqDate, overwrite
+      let { data } = await axios.post(`http://localhost:8080/api/mark_attendance2`, {
+        ...formValues, presentStudents, reqDate, overwrite
       })
       setPresentStudents([])
       localStorage.removeItem('presentStudents')
