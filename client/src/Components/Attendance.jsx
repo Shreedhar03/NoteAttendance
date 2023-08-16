@@ -140,8 +140,8 @@ const Attendance = () => {
                                 dialog={dialog}
                                 handleOverride={handleOverride}
                                 handleUpdate={handleUpdate}
-                                option1={"Override🔥"}
-                                option2={"ExtraLecture🥹"}
+                                option1={"Override"}
+                                option2={"ExtraLecture"}
                             />
                         }
                     </>
