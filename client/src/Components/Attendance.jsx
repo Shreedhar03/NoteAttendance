@@ -15,7 +15,7 @@ const Attendance = () => {
     const { getStudents, setOverwrite, entryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
     const [dialog, setDialog] = useState(false)
     const [loading, setLoading] = useState(true)
-    const [gridView, setGridView] = useState(true)
+    const [gridView, setGridView] = useState(false)
     const [navShodow, setNavShodow] = useState(false)
     const [selectAll, setSelectAll] = useState(true)
     const [date, setDate] = useState(new Date())

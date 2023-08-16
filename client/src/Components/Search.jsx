@@ -35,15 +35,19 @@ const Search = () => {
     }, 1000)
   }
   const fetchStudents = async () => {
-    setLoading(true)
     const values = { year, div }
-    let { data } = await axios.get(`http://localhost:8080/api/search_students`,
+    try{
+      let { data } = await axios.get(`http://localhost:8080/api/search_students`,
       { params: values }
-    )
-    console.log(data)
-    setLoading(false)
-    setStudents(data)
-    setStudentList(data)
+      )
+      setLoading(true)
+      console.log(data)
+      setLoading(false)
+      setStudents(data)
+      setStudentList(data)
+    }catch(err){
+      console.log(err)
+    }
   }
   useEffect(() => {
     studentList.length===0 && fetchStudents()

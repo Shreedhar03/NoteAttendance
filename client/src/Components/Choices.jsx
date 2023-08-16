@@ -5,16 +5,9 @@ import { AppContext } from '../App'
 import axios from 'axios'
 
 const Choices = () => {
-    const { getStructure,checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
+    const {subjects, getStructure,checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
     const goto = useNavigate()
-
-    const [subjects, setSubjects] = useState({})
-    const fetchStructure = async () => {
-        let { data } = await axios.get(`http://localhost:8080/api/get_structure`)
-        console.log("structure:", data)
-        setSubjects(data)
-        localStorage.setItem('structure', JSON.stringify(data))
-    }
+   
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value })
         // console.log("formValues.year",formValues.year)
@@ -30,14 +23,14 @@ const Choices = () => {
         setBatches(getStructure()[formValues.year]["batches"])
         setFormValues({
             ...formValues,
-            subject: subjects[formValues.year]?.theory[0],
-            labSubject: subjects[formValues.year]?.labs[0],
-            batch: subjects[formValues.year]?.batches[0]
+            subject: subjects[formValues.year].theory[0],
+            labSubject: subjects[formValues.year].labs[0],
+            batch: subjects[formValues.year].batches[0]
         })
+        console.log("subjects[formValues.year].theory[0]",subjects[formValues.year].theory[0])
         console.log("subjects",subjects)
     }, [formValues.year,formValues.div])
     useEffect(() => {
-        fetchStructure()
         checkAuthState()
     }, [])
     // useEffect(()=>{
@@ -45,7 +38,7 @@ const Choices = () => {
     // },[formValues])
     return (
         <>
-            <nav className='px-6 py-3 sticky top-0 bg-white flex justify-between items-center shadow-md'>
+            <nav className='px-6 py-3 sticky top-0 z-20 bg-white flex justify-between items-center shadow-md'>
                 <div className='flex items-center gap-1'>
                     <i className='bx bxs-user-circle text-xl' ></i>
                     <span>{user}</span>
