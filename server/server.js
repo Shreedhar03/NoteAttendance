@@ -121,7 +121,7 @@ app.post("/api/mark_attendance", async (req, res) => {
   console.log("MARKING ATTENDANCE")
   try {
     // Getting data from request
-    const { year, div, subject, batch, present_students, req_date, overwrite = false } = req.body
+    const { year, div, subject, batch, presentStudents, reqDate, overwrite = false } = req.body
 
     // Preliminary checks
     // Uses structure declared above to compare requested subject string
@@ -142,8 +142,8 @@ app.post("/api/mark_attendance", async (req, res) => {
       return res.status(400).send("Invalid request")
     }
     const date = DateTime.now().toFormat("dd'/'MM")
-    if (req_date !== date) {
-      console.log("Provided date not the current one: ", req_date, " Expected: ", date)
+    if (reqDate !== date) {
+      console.log("Provided date not the current one: ", reqDate, " Expected: ", date)
       return res.status(400).send("Invalid request")
     }
 
@@ -207,7 +207,7 @@ app.post("/api/mark_attendance", async (req, res) => {
 
       if (overwrite) {
         // Setting values directly
-        if (present_students.includes(currentRoll)) {
+        if (presentStudents.includes(currentRoll)) {
           // Present
           sheet.getCell(i, columnIndex).value = 1
         } else {
@@ -216,7 +216,7 @@ app.post("/api/mark_attendance", async (req, res) => {
         }
       } else {
         // Increment if present
-        if (present_students.includes(currentRoll)) {
+        if (presentStudents.includes(currentRoll)) {
           // Present
           if (currentValue === null) {
             sheet.getCell(i, columnIndex).value = 1
@@ -356,7 +356,7 @@ app.post('/api/get_report', async (req, res) => {
 
     console.log("SUCCESS")
     res.json(report)
-    
+
   } catch (err) {
     console.log(err.message)
     res.status(400).send("Invalid request")
