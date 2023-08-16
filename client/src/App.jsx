@@ -16,6 +16,7 @@ import Attendance from './Components/Attendance'
 import Feedback from './Components/Feedback'
 import Search from './Components/Search'
 import Student_Info from './Components/Student_Info'
+import axios from 'axios'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_apiKey,
@@ -45,8 +46,8 @@ const getFormValues = () => {
     year: "TE",
     div: "A",
     session: "Theory",
-    subject: "DSA",
-    labSubject: "DSAL",
+    subject: "CN",
+    labSubject: "CNSL",
     batch: "1"
   }
 }
@@ -80,6 +81,7 @@ const getStructure = () => {
 
 function App() {
   const [formValues, setFormValues] = useState(getFormValues)
+  const [subjects, setSubjects] = useState(getStructure())
   const [theorySubjects, setTheorySubjects] = useState(getStructure()[formValues.year]["theory"])
   const [batches, setBatches] = useState(getStructure()[formValues.year]["batches"])
   const [labSubjects, setLabSubjects] = useState(getStructure()[formValues.year]["labs"])
@@ -109,6 +111,13 @@ function App() {
     })
   }
 
+  // 
+  const fetchStructure = async () => {
+    let { data } = await axios.get(`http://localhost:8080/api/get_structure`)
+    console.log("structure:", data)
+    setSubjects(data)
+    localStorage.setItem('structure', JSON.stringify(data))
+}
   // Function to handle sign-in
   const signInWithGoogle = () => {
     signInWithPopup(auth, provider)
@@ -137,6 +146,7 @@ function App() {
 
   useEffect(() => {
     checkAuthState()
+    !JSON.parse(localStorage.getItem('structure')) && fetchStructure()
   }, [])
 
   useEffect(() => {
@@ -144,6 +154,7 @@ function App() {
   }, [formValues])
   return (
     <AppContext.Provider value={{
+      subjects,
       getStructure,
       getStudents,
       goto,
