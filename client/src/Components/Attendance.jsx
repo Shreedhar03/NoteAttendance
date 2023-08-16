@@ -12,13 +12,14 @@ import Loader from './Loader'
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const Attendance = () => {
-    const { getStudents, setOverwrite, entryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
+    const { setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
     const [dialog, setDialog] = useState(false)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(false)
     const [navShodow, setNavShodow] = useState(false)
     const [selectAll, setSelectAll] = useState(true)
     const [date, setDate] = useState(new Date())
+    const [messageTitle, setMessageTitle] = useState('')
     const [message, setMessage] = useState("Overriding the attendance for today")
 
     const fetchStudents = async () => {
@@ -26,6 +27,7 @@ const Attendance = () => {
             const { data } = await axios.get(`http://localhost:8080/api/get_students`,
                 { params: formValues }
             )
+            setEntryExists(data.entryExists)
             console.log("entryExist", data.entryExists)
             setDialog(data.entryExists)
             setStudents(data.students)
@@ -60,10 +62,14 @@ const Attendance = () => {
     }
     const handleOverride = () => {
         setOverwrite(true)
+        setMessageTitle("Overriding")
+        setMessage("Overriding today's Attendance")
         setDialog(false)
     }
     const handleUpdate = () => {
         setOverwrite(false)
+        setMessageTitle("Updating")
+        setMessage("Updating today's Attendance")
         setDialog(false)
     }
     useEffect(() => {
@@ -74,7 +80,7 @@ const Attendance = () => {
         console.log("entry", entryExists)
     }, [])
     useEffect(() => {
-        console.log("presentStudents from Attendance.jsx",presentStudents)
+        console.log("presentStudents from Attendance.jsx", presentStudents)
         localStorage.setItem('presentStudents', JSON.stringify(presentStudents))
         console.log(JSON.parse(localStorage.getItem("presentStudents")).length)
     }, [presentStudents])
@@ -92,24 +98,26 @@ const Attendance = () => {
                             <div className='relative flex items-center justify-center gap-1 border-2 border-black rounded-t-lg h-[60px] w-20'>
                                 <h2 className='text-[45px] font-semibold text-[var(--primary)]'>{formValues.div}</h2>
                                 <div className='flex flex-col items-end'>
-                                    <p className='text-sm h-4'>{formValues.session === "Lab" && formValues.batch}</p>
+                                    <p className='text-sm h-4'>{formValues.session === "Practical" && formValues.batch}</p>
                                     <p className='text-lg font-semibold h-7'>{formValues.year}</p>
                                 </div>
                                 <div className="absolute bg-black text-white text-xs w-20 py-1 -bottom-5 rounded-b-lg text-center">
                                     {date.getDate()} {months[date.getMonth()]} {date.getFullYear().toString().slice(2)}
                                 </div>
                             </div>
-                            <h2 className='text-3xl font-semibold'>{formValues.subject}</h2>
+                            <h2 className='text-3xl font-semibold'>{formValues.session==="Theory" ? formValues.subject : formValues.labSubject}</h2>
                         </div>
                         <section className={`my-8 flex flex-col gap-3 px-6 ${dialog && 'opacity-20'}`}>
                             <div className='self-end flex gap-1 mb-6'>
-                                <div className='relative group'>
-                                    <p className='mr-2 text-gray-600 flex items-center gap-1'><i className='bx bx-info-circle text-xl'></i>{"Overriding"}</p>
-                                    <div className="bg-white shadow-xl absolute w-40 p-2 hidden group-hover:block">
-                                        {message}
-                                    </div>
+                                {
+                                    entryExists &&
+                                    <div className='relative group'>
+                                        <p className='mr-2 text-gray-600 flex items-center gap-1'><i className='bx bx-info-circle text-xl'></i>{messageTitle}</p>
+                                        <div className="bg-white shadow-xl absolute w-40 p-2 hidden group-hover:block">
+                                            {message}
+                                        </div>
 
-                                </div>
+                                    </div>}
                                 <button onClick={() => setGridView(!gridView)}><img src={!gridView ? grid : list} className='w-6 h-6' alt="" /></button>
                                 <button className='border-2 border-gray-700 rounded-lg text-sm px-2 py-[2px]' onClick={handleSelectAll}>{selectAll ? 'Select All' : 'Reset'}</button>
                             </div>

@@ -14,6 +14,11 @@ const Choices = () => {
     }
     const handleSubmit = (e) => {
         e.preventDefault()
+        if(formValues.session==="Practical"){
+            setFormValues({
+                ...formValues,subject:formValues.labSubject
+            })
+        }
         goto('/attendance')
         console.log(formValues)
     }
@@ -33,9 +38,7 @@ const Choices = () => {
     useEffect(() => {
         checkAuthState()
     }, [])
-    // useEffect(()=>{
-    //     localStorage.setItem('structure', JSON.stringify(subjects))
-    // },[formValues])
+
     return (
         <>
             <nav className='px-6 py-3 sticky top-0 z-20 bg-white flex justify-between items-center shadow-md'>
