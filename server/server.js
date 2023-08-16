@@ -12,6 +12,7 @@ const express = require('express')
 
 const app = express()
 app.use(cors())
+
 const serviceAccountAuth = new JWT({
   email: process.env.client_email,
   key: process.env.private_key,
@@ -137,7 +138,7 @@ app.post("/api/mark_attendance", async (req, res) => {
       console.log("Invalid subject provided: ", subject)
       return res.status(400).send("Invalid request")
     }
-    if (!structure[year].batches.includes(batch)) {
+    if (structure[year].labs.includes(subject) && !structure[year].batches.includes(batch)) {
       console.log("Invalid batch provided: ", batch)
       return res.status(400).send("Invalid request")
     }
