@@ -50,11 +50,11 @@ const Student_Info = () => {
             :
             <div className='flex flex-col bg-slate-10 px-6 my-6'>
                 <button className='self-start text-3xl text-gray-700' onClick={() => navigate('/search')}>&larr;</button>
-                <h1 className='text-xl font-semibold text-[var(--primary)] mt-4'>{record.roll}</h1>
-                <h1 className='abel text-2xl'>{record.name}</h1>
-                <div className='flex justify-between mt-4 border-2 border-gray-400 rounded-lg p-3'>
+                <h1 className='text-2xl font-semibold text-[var(--primary)] mt-4'>{record.roll}</h1>
+                <h1 className='text-3xl font-light pb-2'>{record.name.split(' ')[0]}<br/>{record.name.substr(record.name.indexOf(" ") + 1)}</h1>
+                <div className='flex justify-between mt-4 border-2 border-gray-400 rounded-xl p-3'>
                     <div className='border-r-2 w-1/2 pr-3 border-gray-400'>
-                        <p className='text-sm'>OVERALL</p>
+                        <p className='text-base'>OVERALL</p>
                         <h1 className='text-4xl font-extrabold text-[#008000] mt-2'>
                             {record.overall}
                         </h1>
