@@ -125,7 +125,7 @@ app.post("/api/mark_attendance", async (req, res) => {
     const { year, div, subject, batch, presentStudents, reqDate, overwrite = false } = req.body
 
     // Preliminary checks
-    // Uses structure declared above to compare requested subject string
+    // Uses structure declared above to compare requested 'subject' string
     if (!config.hasOwnProperty(year)) {
       console.log("Invalid year provided", year)
       return res.status(400).send("Invalid request")
@@ -148,6 +148,7 @@ app.post("/api/mark_attendance", async (req, res) => {
       return res.status(400).send("Invalid request")
     }
 
+    // Preparation & setting flags
     const currentClass = config[year][div]
     let electiveFlag = false
     let currentElective = ""
@@ -155,6 +156,7 @@ app.post("/api/mark_attendance", async (req, res) => {
     if (currentClass.hasElectives && subject.includes(currentClass.electiveSheetName)) {
       electiveFlag = true
     }
+    // If elective, getting its color
     if (electiveFlag) {
       currentClass.electives.forEach(el => {
         if (subject.includes(el.name)) {
@@ -166,12 +168,14 @@ app.post("/api/mark_attendance", async (req, res) => {
 
     console.log(currentElective)
 
+    // Opening spreadsheet
     const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
     await doc.loadInfo()
     const sheet = electiveFlag ? doc.sheetsByTitle[currentClass.electiveSheetName] : doc.sheetsByTitle[subject]
 
     console.log(currentClass.electiveSheetName, subject)
 
+    // Getting date index
     await sheet.loadHeaderRow()
     const columnIndex = sheet.headerValues.indexOf(date)
     if (columnIndex === -1) {
@@ -181,23 +185,55 @@ app.post("/api/mark_attendance", async (req, res) => {
 
     await sheet.loadCells()
 
+    // Setting limits based on batch (only if subject is lab)
     let startLimit = 1
     let endLimit = currentClass.lastRoll
-
     if (currentClass.labs.includes(subject)) {
       startLimit = currentClass.batches[batch].start
       endLimit = currentClass.batches[batch].end
     }
 
+    let alreadyPresent = false
+    let effectiveIndex = 0
+    if (sheet.getCell(currentClass.lastRoll + 1, columnIndex).value > 0) {
+      // Entries present - check overwrite & create new column
+      if (overwrite) {
+        // Make changes to same column
+        effectiveIndex = columnIndex
+      } else {
+        // Add new column & make changes to that
+        // Get index of current date
+        let originalIndex = sheet.headerValues.indexOf(date)
+        let currentIndex = originalIndex
+        while (sheet.getCell(0, currentIndex).formattedValue.includes('16/08')) {
+          currentIndex++
+        }
+        // Inserting new column
+        sheet.insertDimension('COLUMNS', { startIndex: currentIndex, endIndex: currentIndex + 1 }, true)
+        // Resetting cache
+        sheet.resetLocalCache()
+        await doc.loadInfo()
+        await sheet.loadCells()
+        // Setting header value of new column
+        sheet.getCell(0, currentIndex).value = `${sheet.getCell(0, originalIndex).formattedValue}-${currentIndex - originalIndex + 1}`
+        const a1 = sheet.getCell(currentClass.lastRoll + 1, currentIndex).a1Column
+        // Setting bottom formula
+        sheet.getCell(currentClass.lastRoll + 1, currentIndex).formula = `=SUM(${a1}2:${a1}${currentClass.lastRoll})`
+        effectiveIndex = currentIndex
+      }
+    } else {
+      // No entries
+      effectiveIndex = columnIndex
+    }
+
+    // Main loop - for each row in sheet
     for (let i = startLimit; i <= endLimit; i++) {
       let currentRoll = sheet.getCell(i, 0).value
-      let currentValue = sheet.getCell(i, columnIndex).value
-
+      let currentValue = sheet.getCell(i, effectiveIndex).value
       // Skipping disabled roll nos.
       if (currentClass.disabled.includes(currentRoll)) {
         continue
       }
-
       // If elective, skip non-relevant students
       if (electiveFlag) {
         if (JSON.stringify(sheet.getCell(i, 1).backgroundColor) !== JSON.stringify(currentElectiveColor)) {
@@ -206,30 +242,10 @@ app.post("/api/mark_attendance", async (req, res) => {
         }
       }
 
-      if (overwrite) {
-        // Setting values directly
-        if (presentStudents.includes(currentRoll)) {
-          // Present
-          sheet.getCell(i, columnIndex).value = 1
-        } else {
-          // Absent
-          sheet.getCell(i, columnIndex).value = 0
-        }
+      if (presentStudents.includes(currentRoll)) {
+        sheet.getCell(i, effectiveIndex).value = 1
       } else {
-        // Increment if present
-        if (presentStudents.includes(currentRoll)) {
-          // Present
-          if (currentValue === null) {
-            sheet.getCell(i, columnIndex).value = 1
-          } else {
-            sheet.getCell(i, columnIndex).value = currentValue + 1
-          }
-        } else {
-          // Absent
-          if (currentValue === null) {
-            sheet.getCell(i, columnIndex).value = 0
-          }
-        }
+        sheet.getCell(i, effectiveIndex).value = 0
       }
     }
 
@@ -311,11 +327,11 @@ app.post('/api/get_report', async (req, res) => {
     let report = {}
 
     // Adding overalls
-    report.roll = sheet.getCell(currentRoll+OFFSET, 0).value
-    report.name = sheet.getCell(currentRoll+OFFSET, 1).value
-    report.overall = sheet.getCell(currentRoll+OFFSET, sheet.headerValues.indexOf('OVERALL')).formattedValue
-    report.theory = sheet.getCell(currentRoll+OFFSET, sheet.headerValues.indexOf('THEORY')).formattedValue
-    report.labs = sheet.getCell(currentRoll+OFFSET, sheet.headerValues.indexOf('LABS')).formattedValue
+    report.roll = sheet.getCell(currentRoll + OFFSET, 0).value
+    report.name = sheet.getCell(currentRoll + OFFSET, 1).value
+    report.overall = sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('OVERALL')).formattedValue
+    report.theory = sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('THEORY')).formattedValue
+    report.labs = sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('LABS')).formattedValue
 
     // Adding distribution
     let theoryDist = []
@@ -324,9 +340,9 @@ app.post('/api/get_report', async (req, res) => {
       theoryDist.push(
         {
           title: sub,
-          percentage: sheet.getCell(currentRoll+OFFSET, colIndex+1).formattedValue,
-          attended: sheet.getCell(currentRoll+OFFSET, colIndex).formattedValue,
-          outOf: sheet.getCell(currentClass.lastRoll+OFFSET+1, colIndex).formattedValue
+          percentage: sheet.getCell(currentRoll + OFFSET, colIndex + 1).formattedValue,
+          attended: sheet.getCell(currentRoll + OFFSET, colIndex).formattedValue,
+          outOf: sheet.getCell(currentClass.lastRoll + OFFSET + 1, colIndex).formattedValue
         }
       )
     })
@@ -338,7 +354,7 @@ app.post('/api/get_report', async (req, res) => {
       theoryDist.push(
         {
           title: currentClass.electiveSheetName,
-          percentage: sheet.getCell(currentRoll+OFFSET, colIndex+1).formattedValue
+          percentage: sheet.getCell(currentRoll + OFFSET, colIndex + 1).formattedValue
         }
       )
     }
@@ -349,7 +365,7 @@ app.post('/api/get_report', async (req, res) => {
       labsDist.push(
         {
           title: lab,
-          percentage: sheet.getCell(currentRoll+OFFSET, colIndex+1).formattedValue
+          percentage: sheet.getCell(currentRoll + OFFSET, colIndex + 1).formattedValue
         }
       )
     })
@@ -362,4 +378,36 @@ app.post('/api/get_report', async (req, res) => {
     console.log(err.message)
     res.status(400).send("Invalid request")
   }
+})
+
+app.get('/api/test', async (req, res) => {
+  const currentClass = config['TE']['A']
+  const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
+  await doc.loadInfo()
+  const sheet = doc.sheetsByTitle['SPOS']
+  await sheet.loadHeaderRow()
+  await sheet.loadCells()
+  let originalIndex = sheet.headerValues.indexOf('16/08')
+  let currentIndex = originalIndex
+  while (sheet.getCell(0, currentIndex).formattedValue.includes('16/08')) {
+    currentIndex++
+  }
+
+
+  // Inserting new column
+  sheet.insertDimension('COLUMNS', { startIndex: currentIndex, endIndex: currentIndex + 1 }, true)
+
+  // Resetting cache
+  sheet.resetLocalCache()
+  await doc.loadInfo()
+  await sheet.loadCells()
+
+  sheet.getCell(0, currentIndex).value = `${sheet.getCell(0, originalIndex).formattedValue}-${currentIndex - originalIndex + 1}`
+  const a1 = sheet.getCell(currentClass.lastRoll + 1, currentIndex).a1Column
+  // Setting bottom formula
+  sheet.getCell(currentClass.lastRoll + 1, currentIndex).formula = `=SUM(${a1}2:${a1}${currentClass.lastRoll})`
+
+  await sheet.saveUpdatedCells()
+  console.log("DONE")
+  res.send("DONE")
 })
