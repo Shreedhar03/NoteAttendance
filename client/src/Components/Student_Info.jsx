@@ -55,7 +55,7 @@ const Student_Info = () => {
                 <div className='flex justify-between mt-4 border-2 border-gray-400 rounded-xl p-3'>
                     <div className='border-r-2 w-1/2 pr-3 border-gray-400'>
                         <p className='text-base'>OVERALL</p>
-                        <h1 className='text-4xl font-extrabold text-[#008000] mt-2'>
+                        <h1 className='text-6xl font-semibold text-[#008000] mt-2'>
                             {record.overall}
                         </h1>
 
@@ -64,16 +64,16 @@ const Student_Info = () => {
                     <div className='w-1/2 pl-3'>
                         <h1 className='text-sm'>THEORY</h1>
                         <p>
-                            <span className='text-lg'>
+                            <span className='text-4xl font-light'>
                         {record.theory}
                             </span>
                         </p>
                         <h1 className='mt-2 text-sm'>LABS</h1>
-                        <p><span className='text-lg'>{record.labs}</span></p>
+                        <p><span className='text-4xl font-light'>{record.labs}</span></p>
                     </div>
                 </div>
                 <div className='mt-8'>
-                    <p className='uppercase text-sm text-gray-700'>theory distribution</p>
+                    <p className='capitalize font-light text-base text-gray-700'>theory distribution</p>
                     <div className='flex gap-3 flex-wrap mt-4'>
                         {
                             record.theoryDist?.map((e, key) => {
@@ -85,7 +85,7 @@ const Student_Info = () => {
                     </div>
                 </div>
                 <div className='mt-8'>
-                    <p className='uppercase text-sm text-gray-700'>practical distribution</p>
+                    <p className='capitalize font-light text-base text-gray-700'>labs distribution</p>
                     <div className='flex gap-3 flex-wrap mt-4'>
                         {
                             record.labsDist?.map((e, key) => {
