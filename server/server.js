@@ -293,7 +293,7 @@ app.get('/api/search_students', async (req, res) => {
 
 app.post('/api/get_report', async (req, res) => {
   console.log("REPORT")
-  console.log(JSON.stringify(config))
+  // console.log(JSON.stringify(config))
   try {
     const { year, div, roll } = req.body
     // Preliminary checks
@@ -329,9 +329,9 @@ app.post('/api/get_report', async (req, res) => {
     // Adding overalls
     report.roll = sheet.getCell(currentRoll + OFFSET, 0).value
     report.name = sheet.getCell(currentRoll + OFFSET, 1).value
-    report.overall = sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('OVERALL')).formattedValue
-    report.theory = sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('THEORY')).formattedValue
-    report.labs = sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('LABS')).formattedValue
+    report.overall = `${Math.floor(sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('OVERALL')).value * 100)}%`
+    report.theory = `${Math.floor(sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('THEORY')).value * 100)}%`
+    report.labs = `${Math.floor(sheet.getCell(currentRoll + OFFSET, sheet.headerValues.indexOf('LABS')).value * 100)}%`
 
     // Adding distribution
     let theoryDist = []
@@ -340,7 +340,7 @@ app.post('/api/get_report', async (req, res) => {
       theoryDist.push(
         {
           title: sub,
-          percentage: sheet.getCell(currentRoll + OFFSET, colIndex + 1).formattedValue,
+          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value*100)}%`,
           attended: sheet.getCell(currentRoll + OFFSET, colIndex).formattedValue,
           outOf: sheet.getCell(currentClass.lastRoll + OFFSET + 1, colIndex).formattedValue
         }
@@ -354,7 +354,7 @@ app.post('/api/get_report', async (req, res) => {
       theoryDist.push(
         {
           title: currentClass.electiveSheetName,
-          percentage: sheet.getCell(currentRoll + OFFSET, colIndex + 1).formattedValue
+          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value*100)}%`
         }
       )
     }
@@ -365,7 +365,7 @@ app.post('/api/get_report', async (req, res) => {
       labsDist.push(
         {
           title: lab,
-          percentage: sheet.getCell(currentRoll + OFFSET, colIndex + 1).formattedValue
+          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value*100)}%`
         }
       )
     })
