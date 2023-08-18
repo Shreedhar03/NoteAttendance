@@ -205,7 +205,7 @@ app.post("/api/mark_attendance", async (req, res) => {
         // Get index of current date
         let originalIndex = sheet.headerValues.indexOf(date)
         let currentIndex = originalIndex
-        while (sheet.getCell(0, currentIndex).formattedValue.includes('16/08')) {
+        while (sheet.getCell(0, currentIndex).formattedValue.includes(date)) {
           currentIndex++
         }
         // Inserting new column
@@ -220,6 +220,10 @@ app.post("/api/mark_attendance", async (req, res) => {
         // Setting bottom formula
         sheet.getCell(currentClass.lastRoll + 1, currentIndex).formula = `=SUM(${a1}2:${a1}${currentClass.lastRoll})`
         effectiveIndex = currentIndex
+        console.log("MYVAL")
+        // console.log(sheet.getCell(currentClass.lastRoll+1, effectiveIndex-1).formattedValue)
+        // console.log(sheet.getCell(currentClass.lastRoll+1, effectiveIndex).formattedValue)
+        // console.log(sheet.getCell(currentClass.lastRoll+1, effectiveIndex+1).formattedValue)
       }
     } else {
       // No entries
