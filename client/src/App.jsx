@@ -17,6 +17,7 @@ import Feedback from './Components/Feedback'
 import Search from './Components/Search'
 import Student_Info from './Components/Student_Info'
 import axios from 'axios'
+import DailyReport from './Components/DailyReport'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_apiKey,
@@ -190,6 +191,7 @@ function App() {
         <Route path="/feedback" element={<Feedback />}></Route>
         <Route path="/search" element={<Search />}></Route>
         <Route path="/student-info/:roll" element={<Student_Info />}></Route>
+        <Route path="/daily-report" element={<DailyReport />}></Route>
       </Routes>
     </AppContext.Provider>
   )
