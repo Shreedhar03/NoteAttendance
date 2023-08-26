@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { getFirestore } from 'firebase/firestore'
 import {
   getAuth,
   GoogleAuthProvider,
@@ -18,6 +19,7 @@ import Search from './Components/Search'
 import Student_Info from './Components/Student_Info'
 import axios from 'axios'
 import DailyReport from './Components/DailyReport'
+import ErrorPage from './Components/ErrorPage'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_apiKey,
@@ -31,6 +33,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
+const db = getFirestore(app)
 
 setPersistence(auth, browserLocalPersistence)
 
@@ -118,7 +121,7 @@ function App() {
     console.log("structure:", data)
     setSubjects(data)
     localStorage.setItem('structure', JSON.stringify(data))
-}
+  }
   // Function to handle sign-in
   const signInWithGoogle = () => {
     signInWithPopup(auth, provider)
@@ -182,7 +185,8 @@ function App() {
       entryExists,
       setEntryExists,
       overwrite,
-      setOverwrite
+      setOverwrite,
+      db
     }}>
       <Routes>
         <Route path="/" element={<Login />}></Route>
@@ -192,6 +196,7 @@ function App() {
         <Route path="/search" element={<Search />}></Route>
         <Route path="/student-info/:roll" element={<Student_Info />}></Route>
         <Route path="/daily-report" element={<DailyReport />}></Route>
+        <Route path='*' element={<ErrorPage />} />
       </Routes>
     </AppContext.Provider>
   )
