@@ -17,7 +17,7 @@ const Feedback = () => {
                     <h1 className='text-4xl font-semibold mt-8'>{formValues.session==="Theory" ? formValues.subject : formValues.labSubject}</h1>
                     <h2 className='abel text-2xl font-semibold'>Attendance Updated</h2>
                 </div>
-                <button className='bg-[var(--primary)] p-4 w-full mt-8 rounded-lg text-white' onClick={() => { navigate('/'); setSubmitted(false) }}>Back to Home</button>
+                <button className='bg-[var(--primary)] p-4 w-full mt-8 rounded-lg text-white' onClick={() => { navigate('/selection'); setSubmitted(false) }}>Back to Home</button>
             </section>
             :
             <>

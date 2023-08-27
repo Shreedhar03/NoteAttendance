@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import StudentList from './StudentList'
-import grid from '../assets/grid.svg'
-import list from '../assets/list.svg'
+import grid from '../assets/grid-3.svg'
+import list from '../assets/list-3.svg'
 import StudentGrid from './StudentGrid'
 import { AppContext } from '../App'
 import Dialog from './Dialog'
@@ -26,7 +26,7 @@ const Attendance = () => {
 
     const fetchStudents = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:8080/api/get_student`,
+            const { data } = await axios.get(`http://localhost:8080/api/get_students`,
                 { params: formValues }
             )
             setEntryExists(data.entryExists)
@@ -113,7 +113,7 @@ const Attendance = () => {
                             <h2 className='text-3xl font-semibold'>{formValues.session==="Theory" ? formValues.subject : formValues.labSubject}</h2>
                         </div>
                         <section className={`my-8 flex flex-col gap-3 px-6 ${dialog && 'opacity-20'}`}>
-                            <div className='self-end flex gap-1 mb-6'>
+                            <div className='self-end flex gap-2 mb-6'>
                                 {
                                     entryExists &&
                                     <div className='relative group'>

@@ -5,15 +5,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
 
 const Login = () => {
-    const { userMessage,checkLoggedIn, signInWithGoogle, signOutWithGoogle } = useContext(AppContext)
+    const {checkAuthState, userMessage,checkLoggedIn, signInWithGoogle } = useContext(AppContext)
     const goto = useNavigate()
-    const [showPass, setShowPass] = useState(false)
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
 
-    const handleClick=()=>{
-        goto('/selection')
-    }
+    useEffect(()=>{
+        checkAuthState()
+        !checkLoggedIn && goto('/selection')
+    },[])
     return (
         <div className='h-[80vh] flex flex-col items-center justify-center gap-20'>
             <div className="logo flex items-center">
@@ -30,7 +28,6 @@ const Login = () => {
                 </div>
                 <input type="submit" value="Proceed" className='bg-[var(--primary)] p-4 mt-8 rounded-lg text-white' />
     </form>*/}
-            {  !checkLoggedIn ? 
             <>
                 <div onClick={signInWithGoogle} className='flex items-center gap-3 shadow-lg rounded-lg bg-gray-50 px-6 py-3'>
                     <img src={Google} alt="" />
@@ -38,17 +35,7 @@ const Login = () => {
                 </div>
                 <p className='text-center text-red-600'>{userMessage}</p>
             </>
-                :
-                <div className='flex flex-col gap-3'>
-                <button to={'/selection'} className='text- bg-[var(--primary)] text-white py-2 px-4 rounded-lg' onClick={handleClick}>Continue &rarr;</button>
-                <button className='text- bg-red-700 text-white py-2 px-4 rounded-lg' onClick={signOutWithGoogle}>Logout</button>
-                {/* <button onClick={()=>goto('/error', {
-                    state:{
-                        errorMessage:"Error from the Login Route !"
-                    }
-                })}>ErrorPage</button> */}
-                </div>
-            }
+               
         </div>
     )
 }

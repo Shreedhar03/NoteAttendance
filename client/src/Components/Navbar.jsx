@@ -23,7 +23,7 @@ const Navbar = (props) => {
   const checkDate = async () => {
     const existingData = await getDoc(docRef)
     
-    if (existingData?.data()[formValues.div]['Dated'] !== today) {
+    if (existingData?.data()?.[formValues.div]?.['Dated'] !== today) {
       console.log("not today")
       await updateDoc(docRef, {
         [formValues.div]: {
