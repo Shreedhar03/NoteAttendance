@@ -152,28 +152,26 @@ app.post("/api/mark_attendance", async (req, res) => {
     const currentClass = config[year][div]
     let electiveFlag = false
     let currentElective = ""
-    let currentElectiveColor = {}
     if (currentClass.hasElectives && subject.includes(currentClass.electiveSheetName)) {
       electiveFlag = true
     }
-    // If elective, getting its color
+    // If elective, getting its subject name
     if (electiveFlag) {
       currentClass.electives.forEach(el => {
         if (subject.includes(el.name)) {
           currentElective = el.name
-          currentElectiveColor = el.color
         }
       })
     }
 
-    console.log(currentElective)
+    console.log("Extracted elective name: ", currentElective)
 
     // Opening spreadsheet
     const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
     await doc.loadInfo()
     const sheet = electiveFlag ? doc.sheetsByTitle[currentClass.electiveSheetName] : doc.sheetsByTitle[subject]
 
-    console.log(currentClass.electiveSheetName, subject)
+    console.log("Using sheet:", currentClass.electiveSheetName, "For subject:", subject)
 
     // Getting date index
     await sheet.loadHeaderRow()
@@ -193,7 +191,6 @@ app.post("/api/mark_attendance", async (req, res) => {
       endLimit = currentClass.batches[batch].end
     }
 
-    let alreadyPresent = false
     let effectiveIndex = 0
     if (sheet.getCell(currentClass.lastRoll + 1, columnIndex).value > 0) {
       // Entries present - check overwrite & create new column
@@ -220,10 +217,7 @@ app.post("/api/mark_attendance", async (req, res) => {
         // Setting bottom formula
         sheet.getCell(currentClass.lastRoll + 1, currentIndex).formula = `=SUM(${a1}2:${a1}${currentClass.lastRoll})`
         effectiveIndex = currentIndex
-        console.log("MYVAL")
-        // console.log(sheet.getCell(currentClass.lastRoll+1, effectiveIndex-1).formattedValue)
-        // console.log(sheet.getCell(currentClass.lastRoll+1, effectiveIndex).formattedValue)
-        // console.log(sheet.getCell(currentClass.lastRoll+1, effectiveIndex+1).formattedValue)
+        console.log("Added new column")
       }
     } else {
       // No entries
@@ -233,15 +227,14 @@ app.post("/api/mark_attendance", async (req, res) => {
     // Main loop - for each row in sheet
     for (let i = startLimit; i <= endLimit; i++) {
       let currentRoll = sheet.getCell(i, 0).value
-      let currentValue = sheet.getCell(i, effectiveIndex).value
       // Skipping disabled roll nos.
       if (currentClass.disabled.includes(currentRoll)) {
         continue
       }
       // If elective, skip non-relevant students
       if (electiveFlag) {
-        if (JSON.stringify(sheet.getCell(i, 1).backgroundColor) !== JSON.stringify(currentElectiveColor)) {
-          console.log("PASSED")
+        if (sheet.getCell(i, 4).value !== currentElective) {
+          console.log("Skipping roll no.:", i)
           continue
         }
       }
@@ -344,7 +337,7 @@ app.post('/api/get_report', async (req, res) => {
       theoryDist.push(
         {
           title: sub,
-          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value*100)}%`,
+          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value * 100)}%`,
           attended: sheet.getCell(currentRoll + OFFSET, colIndex).formattedValue,
           outOf: sheet.getCell(currentClass.lastRoll + OFFSET + 1, colIndex).formattedValue
         }
@@ -358,7 +351,7 @@ app.post('/api/get_report', async (req, res) => {
       theoryDist.push(
         {
           title: currentClass.electiveSheetName,
-          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value*100)}%`
+          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value * 100)}%`
         }
       )
     }
@@ -369,7 +362,7 @@ app.post('/api/get_report', async (req, res) => {
       labsDist.push(
         {
           title: lab,
-          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value*100)}%`
+          percentage: `${Math.floor(sheet.getCell(currentRoll + OFFSET, colIndex + 1).value * 100)}%`
         }
       )
     })
