@@ -1,12 +1,16 @@
 import React from 'react'
-// import error2 from '../assets/error2.svg'
+import error from '../assets/error.svg'
+import { Link,useLocation } from 'react-router-dom'
 
 const ErrorPage = () => {
+  const message = useLocation()
   return (
-    <div className='flex flex-col items-center max-w-5xl px-6 bg-teal-300'>
-      <img src={''} alt="error" />
-      <p className="text-2xl">Something went wrong !</p>
-      <button className='px-8 rounded-lg py-2 bg-[var(--primary)] text-white'>Back to Home</button>
+    <div className='flex flex-col h-screen justify-evenly items-center max-w-5xl px-6'>
+      <img src={error} alt="error" />
+      <div className='flex flex-col items-center gap-12'>
+        <p className="text-2xl">{message.state.errorMessage}</p>
+        <Link to={'/'} className='px-8 rounded-lg py-3 bg-[var(--primary)] text-white'>Back to Home</Link>
+      </div>
     </div>
   )
 }

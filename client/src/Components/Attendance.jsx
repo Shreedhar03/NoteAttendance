@@ -8,11 +8,13 @@ import { AppContext } from '../App'
 import Dialog from './Dialog'
 import axios from 'axios'
 import Loader from './Loader'
+import { useNavigate } from 'react-router-dom'
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const Attendance = () => {
-    const { setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
+    const goto = useNavigate()
+    const {showErrorPage, setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
     const [dialog, setDialog] = useState(false)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(false)
@@ -24,7 +26,7 @@ const Attendance = () => {
 
     const fetchStudents = async () => {
         try {
-            const { data } = await axios.get(`http://localhost:8080/api/get_students`,
+            const { data } = await axios.get(`http://localhost:8080/api/get_student`,
                 { params: formValues }
             )
             setEntryExists(data.entryExists)
@@ -37,6 +39,7 @@ const Attendance = () => {
             data.entryExists && setPresentStudents(alreadyPresent)
             setLoading(false)
         } catch (err) {
+            showErrorPage(err.message)
             console.log(err)
         }
     }
@@ -71,6 +74,8 @@ const Attendance = () => {
         setMessageTitle("Updating")
         setMessage("Updating today's Attendance")
         setDialog(false)
+        localStorage.removeItem('presentStudents')
+        setPresentStudents([])
     }
     useEffect(() => {
         fetchStudents()

@@ -98,6 +98,13 @@ function App() {
   const [entryExists, setEntryExists] = useState(false)
   const [overwrite, setOverwrite] = useState(false)
   const goto = useNavigate()
+  const showErrorPage = (errorMessage)=>{
+    goto('/error',{
+      state:{
+        errorMessage
+      }
+    })
+  }
 
   const checkAuthState = () => {
     onAuthStateChanged(auth, (user) => {
@@ -158,6 +165,7 @@ function App() {
   }, [formValues])
   return (
     <AppContext.Provider value={{
+      showErrorPage,
       subjects,
       getStructure,
       getStudents,

@@ -14,7 +14,7 @@ const Navbar = (props) => {
   const date = props.date.getDate().toString()
   const month = (props.date.getMonth() + 1).toString()
   const reqDate = month < 10 ? date + '/0' + month : date + '/' + month
-  const { db, students, presentStudents, setPresentStudents, formValues, overwrite, setSubmitted } = useContext(AppContext)
+  const {showErrorPage, db, students, presentStudents, setPresentStudents, formValues, overwrite, setSubmitted } = useContext(AppContext)
   const navigate = useNavigate()
 
   const docRef = doc(db, 'noteattendance', formValues.year)
@@ -73,6 +73,7 @@ const Navbar = (props) => {
       }
       console.log("markedFL")
     } catch (err) {
+      showErrorPage(err.message)
       console.log(err)
     }
   }
@@ -91,6 +92,7 @@ const Navbar = (props) => {
       console.log(data)
     } catch (err) {
       console.log(err)
+      showErrorPage(err.message)
     }
   }
 

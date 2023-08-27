@@ -42,6 +42,11 @@ const Login = () => {
                 <div className='flex flex-col gap-3'>
                 <button to={'/selection'} className='text- bg-[var(--primary)] text-white py-2 px-4 rounded-lg' onClick={handleClick}>Continue &rarr;</button>
                 <button className='text- bg-red-700 text-white py-2 px-4 rounded-lg' onClick={signOutWithGoogle}>Logout</button>
+                {/* <button onClick={()=>goto('/error', {
+                    state:{
+                        errorMessage:"Error from the Login Route !"
+                    }
+                })}>ErrorPage</button> */}
                 </div>
             }
         </div>
