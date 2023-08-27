@@ -102,7 +102,8 @@ const Choices = () => {
 
                 <div className={`w-full mt-4 'opacity-10'}`}>
                     <Link to={'/search'} className='block my-3 text-lg underline'>Check Student Report</Link>
-                    <input type="submit" value="Proceed" className='bg-[var(--primary)] w-full p-3 rounded-lg text-white' />
+                    <Link to={'/daily-report'} className='block my-3 text-lg underline'>1st Lecture Report</Link>
+                    <input type="submit" value="Proceed" className='bg-[var(--primary)] w-full p-3 mt-2 rounded-lg text-white' />
                 </div>
 
 

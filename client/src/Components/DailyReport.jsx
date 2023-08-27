@@ -1,28 +1,31 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { getDocs,doc, collection } from 'firebase/firestore'
+import { getDocs, collection } from 'firebase/firestore'
 import Year from './Year'
 import { AppContext } from '../App'
+import { Link } from 'react-router-dom'
 
 const DailyReport = () => {
-    const [record,setRecord] = useState([])
-    const {db} = useContext(AppContext)
+    const [record, setRecord] = useState([])
+    const { db } = useContext(AppContext)
     const [date, setDate] = useState(new Date())
-    const getData = async()=>{
+    const getData = async () => {
         const rawData = []
-        let data = await getDocs(collection(db,'noteattendance'))
-        data.forEach(doc=>{
+        let data = await getDocs(collection(db, 'noteattendance'))
+        // console.log("data",data)
+        data.forEach(doc => {
+            // console.log("doc.data()",doc.data()) // SE TE BE data
             rawData.push(doc.data())
         })
         setRecord(rawData)
-        console.log("rawData",record)
+        // console.log("rawData", rawData)
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         getData()
-    },[])
+    }, [])
     return (
         <section className='flex flex-col gap-2 px-4'>
-            <button className='text-3xl text-gray-800 self-start my-4'>&larr;</button>
+            <Link to={'/selection'} className='text-3xl text-gray-800 self-start my-4'>&larr;</Link>
             <div>
                 <h2 className='text-3xl'>Attendance Overview</h2>
                 <p className='text-gray-700'>First Lecture</p>
@@ -33,9 +36,13 @@ const DailyReport = () => {
 
             <div className='mt-4'>
                 {
-                    record.map((rep,key)=>{
-                        return(
-                            <Year key={key} year={rep[0]?.year} divisions={[{count:'75/79',subject:'DBMS',division:'A'},{count:'75/89',subject:'DBMS',division:'B'},{count:'75/79',subject:'DBMS',division:'C'},{count:'75/79',subject:'DBMS',division:'D'}]}/>
+                    record.map((rep, key) => {
+                        return (
+                            // <Year key={key} year={rep['A']?.year} divisions={[{count:'75/79',subject:'DBMS',division:'A'},{count:'75/89',subject:'DBMS',division:'B'},{count:'75/79',subject:'DBMS',division:'C'},{count:'75/79',subject:'DBMS',division:'D'}]}/>
+                            <Year
+                                key={key}
+                                year={rep['A']?.year}
+                                divisions={Object.values(rep)} />
                         )
                     })
                 }
