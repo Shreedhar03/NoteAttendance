@@ -17,18 +17,34 @@ const Navbar = (props) => {
   const { db, students, presentStudents, setPresentStudents, formValues, overwrite, setSubmitted } = useContext(AppContext)
   const navigate = useNavigate()
 
-  // const firstLectureRef = collection(db, "noteattendance")
-  // const docRef = doc(collection(db, 'noteattendance'), "TE")
-
   const docRef = doc(db, 'noteattendance', formValues.year)
+  let rollNos, outOf;
+
+  const checkDate = async () => {
+    const existingData = await getDoc(docRef)
+    
+    if (existingData?.data()[formValues.div]['Dated'] !== today) {
+      console.log("not today")
+      await updateDoc(docRef, {
+        [formValues.div]: {
+          ...existingData?.data()[formValues.div],
+          flag: false
+        }
+      })
+      rollNos = [0], outOf = [0]
+    } else {
+      rollNos = existingData?.data()[formValues.div]?.presentCount || [0]
+      outOf = existingData?.data()[formValues.div]?.outOf || [0]
+    }
+
+    markFirstLecture()
+    console.log(rollNos, '/', outOf)
+
+  }
 
   const markFirstLecture = async () => {
 
     const existingData = await getDoc(docRef)
-    console.log(existingData.data())
-
-    const rollNos = Object.keys(existingData.data()[formValues.div]).length !== 0 ? existingData.data()[formValues.div].presentCount : [0]
-    const outOf = Object.keys(existingData.data()[formValues.div]).length !== 0 ? existingData.data()[formValues.div].outOf : [0]
     const record = {
       year: formValues.year,
       subject: formValues.subject,
@@ -41,14 +57,19 @@ const Navbar = (props) => {
       flag: formValues.session == "Theory" ? true : false
     }
     try {
-      if
-        ((existingData?.data()[formValues.div]['Dated'] === today && formValues.session === "Theory") || existingData?.data()[formValues.div]?.flag === true) {
+
+      if ((existingData?.data()[formValues.div]['Dated'] === today && formValues.session === "Theory") || existingData?.data()[formValues.div]?.flag === true) {
         console.log("1st lecture already taken")
+        console.log(existingData?.data()[formValues.div]['Dated'] === today)
+        console.log(formValues.session === "Theory")
+        console.log(existingData?.data()[formValues.div]?.flag === true)
+
       } else {
         await updateDoc(docRef, {
           [formValues.div]: record
           // 'D' : record 
         })
+        console.log("this is 1st lecture")
       }
       console.log("markedFL")
     } catch (err) {
@@ -66,7 +87,7 @@ const Navbar = (props) => {
       setPresentStudents([])
       localStorage.removeItem('presentStudents')
       setSubmitted(true)
-      markFirstLecture()
+      checkDate()
       console.log(data)
     } catch (err) {
       console.log(err)
