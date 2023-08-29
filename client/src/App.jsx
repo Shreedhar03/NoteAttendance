@@ -39,7 +39,7 @@ setPersistence(auth, browserLocalPersistence)
 
 const provider = new GoogleAuthProvider()
 // permitted users
-const permittedUsers = ['urawane03@gmail.com', 'yash25.j@gmail.com']
+const permittedUsers = ['urawane03@gmail.com','21511642.dypit@dypvp.edu.in', 'yash25.j@gmail.com']
 export const AppContext = createContext()
 
 const getStudents = () => {
@@ -95,6 +95,7 @@ function App() {
   const [checkLoggedIn, setCheckLoggedIn] = useState(false)
   const [userName, setUserName] = useState('')
   const [userEmail, setUserEmail] = useState('')
+  const [userPic,setUserPic]=useState('https://randomuser.me/api/portraits/men/44.jpg')
   const [userMessage, setUserMessage] = useState('')
   const [entryExists, setEntryExists] = useState(false)
   const [overwrite, setOverwrite] = useState(false)
@@ -112,6 +113,7 @@ function App() {
       if (user && permittedUsers.includes(user.email)) {
         // setIsLoggedIn(true)
         console.log(user.photoURL)
+        setUserPic(user.photoURL)
         setCheckLoggedIn(true)
         setUserName(user.displayName)
         setUserEmail(user.email)
@@ -198,6 +200,7 @@ function App() {
       signOutWithGoogle,
       userName,
       userEmail,
+      userPic,
       entryExists,
       setEntryExists,
       overwrite,

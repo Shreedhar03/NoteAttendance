@@ -37,7 +37,7 @@ const Login = () => {
                     <>
                         <div onClick={signInWithGoogle} className='flex items-center gap-3 shadow-lg rounded-lg bg-gray-50 px-6 py-3'>
                             <img src={Google} alt="" />
-                            <p className=''>Continue with Google</p>
+                            <p className='cursor-pointer'>Continue with Google</p>
                         </div>
                         <p className='text-center text-red-600'>{userMessage}</p>
                     </>

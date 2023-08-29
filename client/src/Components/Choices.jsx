@@ -5,7 +5,7 @@ import { AppContext } from '../App'
 import axios from 'axios'
 
 const Choices = () => {
-    const { subjects, getStructure, checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, userName } = useContext(AppContext)
+    const { subjects, getStructure, checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, userName,userPic } = useContext(AppContext)
     const goto = useNavigate()
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value })
@@ -41,9 +41,9 @@ const Choices = () => {
     return (
         <>
             <nav className='px-6 py-3 sticky top-0 z-20 bg-white flex justify-between items-center shadow-md'>
-                <div className='flex items-center gap-1'>
+                <div className='flex items-center gap-2'>
                     {/* <i className='bx bxs-user-circle text-xl' ></i> */}
-                    {/* <img src={localStorage.getItem("userImage").toString()} alt="profile" className='w-3 h-3' /> */}
+                    <img src={userPic} alt="profile" className='w-10 h-10 rounded-full' />
                     <span>{userName}</span>
                 </div>
                 <button className='text-sm bg-red-700 p-1 px-2 text-white rounded-lg' onClick={signOutWithGoogle}>Logout</button>
