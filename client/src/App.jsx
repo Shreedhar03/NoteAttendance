@@ -20,6 +20,7 @@ import Student_Info from './Components/Student_Info'
 import axios from 'axios'
 import DailyReport from './Components/DailyReport'
 import ErrorPage from './Components/ErrorPage'
+import user from './assets/user.svg'
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_apiKey,
@@ -95,7 +96,7 @@ function App() {
   const [checkLoggedIn, setCheckLoggedIn] = useState(false)
   const [userName, setUserName] = useState('')
   const [userEmail, setUserEmail] = useState('')
-  const [userPic,setUserPic]=useState('https://randomuser.me/api/portraits/men/44.jpg')
+  const [userPic,setUserPic]=useState(user)
   const [userMessage, setUserMessage] = useState('')
   const [entryExists, setEntryExists] = useState(false)
   const [overwrite, setOverwrite] = useState(false)

@@ -43,7 +43,7 @@ const Choices = () => {
             <nav className='px-6 py-3 sticky top-0 z-20 bg-white flex justify-between items-center shadow-md'>
                 <div className='flex items-center gap-2'>
                     {/* <i className='bx bxs-user-circle text-xl' ></i> */}
-                    <img src={userPic} alt="profile" className='w-10 h-10 rounded-full' />
+                    <img src={userPic} alt="profile" referrerPolicy='no-referrer' className='w-10 h-10 rounded-full' />
                     <span>{userName}</span>
                 </div>
                 <button className='text-sm bg-red-700 p-1 px-2 text-white rounded-lg' onClick={signOutWithGoogle}>Logout</button>
