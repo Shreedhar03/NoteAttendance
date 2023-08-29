@@ -149,6 +149,104 @@ const config = {
         }
       ]
     },
+  },
+  SE: {
+    A: {
+      sheetId: '1nFdCP-9LWDASc1rA-LbDRDDgrJLs5-DgGtwctMhwWws',
+      lastRoll: 71,
+      theory: ['CG', 'DM', 'FDS', 'HSS', 'OOP', 'DELD'],
+      labs: ['BCSL', 'DEL', 'DSL', 'OOPCGL'],
+      disabled: [],
+      batches: {
+        "1": {
+          start: 1,
+          end: 25,
+        },
+        "2": {
+          start: 26,
+          end: 50,
+        },
+        "3": {
+          start: 51,
+          end: 71,
+        },
+      },
+      hasElectives: false,
+      electiveSheetName: '',
+      electives: []
+    },
+    B: {
+      sheetId: '1b4XC1kNlOss1Qqzg7XpCTJ18Oy2yuPdnTfbKXYxeA4c',
+      lastRoll: 71,
+      theory: ['CG', 'DM', 'FDS', 'HSS', 'OOP', 'DELD'],
+      labs: ['BCSL', 'DEL', 'DSL', 'OOPCGL'],
+      disabled: [],
+      batches: {
+        "1": {
+          start: 1,
+          end: 25,
+        },
+        "2": {
+          start: 26,
+          end: 50,
+        },
+        "3": {
+          start: 51,
+          end: 71,
+        },
+      },
+      hasElectives: false,
+      electiveSheetName: '',
+      electives: []
+    },
+    C: {
+      sheetId: '1vPPNshg04YW7-7TXPdtggEzIN4Oi1wcJblbyBG7XuxQ',
+      lastRoll: 71,
+      theory: ['CG', 'DM', 'FDS', 'HSS', 'OOP', 'DELD'],
+      labs: ['BCSL', 'DEL', 'DSL', 'OOPCGL'],
+      disabled: [],
+      batches: {
+        "1": {
+          start: 1,
+          end: 25,
+        },
+        "2": {
+          start: 26,
+          end: 50,
+        },
+        "3": {
+          start: 51,
+          end: 71,
+        },
+      },
+      hasElectives: false,
+      electiveSheetName: '',
+      electives: []
+    },
+    D: {
+      sheetId: '1UvaU2YY_OB3Rw-8FXpKlG452iLrc45VH-YuxBMfYjF4',
+      lastRoll: 70,
+      theory: ['CG', 'DM', 'FDS', 'HSS', 'OOP', 'DELD'],
+      labs: ['BCSL', 'DEL', 'DSL', 'OOPCGL'],
+      disabled: [],
+      batches: {
+        "1": {
+          start: 1,
+          end: 25,
+        },
+        "2": {
+          start: 26,
+          end: 50,
+        },
+        "3": {
+          start: 51,
+          end: 70,
+        },
+      },
+      hasElectives: false,
+      electiveSheetName: '',
+      electives: []
+    },
   }
 }
 
