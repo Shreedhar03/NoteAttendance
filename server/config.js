@@ -14,7 +14,7 @@ const bgColors = {
 const config = {
   TE: {
     A: {
-      sheetId: '1zefff2HDlPHp3Wb8vSLwACa38sAts_YTKWZL2zXfjUY',
+      sheetId: '1DmMUy2iOBW_ygD6pJ53AlKds7-G3q_Z08-ks7cMizV4',
       lastRoll: 79,
       theory: ['CN', 'DBMS', 'SPOS', 'TOC'],
       labs: ['CNSL', 'DBMSL', 'LP1'],
@@ -37,16 +37,115 @@ const config = {
       electiveSheetName: 'EL1',
       electives: [
         {
-          name: 'HCI',
-          color: bgColors.purple
+          name: 'HCI'
         },
         {
-          name: 'SPM',
-          color: bgColors.orange
+          name: 'SPM'
         },
         {
-          name: 'IOT',
-          color: bgColors.blue
+          name: 'IOT'
+        }
+      ]
+    },
+    B: {
+      sheetId: '1IouuSBaV6m_MqVYNjNPG47wK7q3p6HzSjY1n2w9yjIg',
+      lastRoll: 79,
+      theory: ['CN', 'DBMS', 'SPOS', 'TOC'],
+      labs: ['CNSL', 'DBMSL', 'LP1'],
+      disabled: [],
+      batches: {
+        "1": {
+          start: 1,
+          end: 26,
+        },
+        "2": {
+          start: 27,
+          end: 52,
+        },
+        "3": {
+          start: 53,
+          end: 79,
+        },
+      },
+      hasElectives: true,
+      electiveSheetName: 'EL1',
+      electives: [
+        {
+          name: 'HCI'
+        },
+        {
+          name: 'SPM'
+        },
+        {
+          name: 'IOT'
+        }
+      ]
+    },
+    C: {
+      sheetId: '1XGyMB3WU33rLjlkxkFHQ1dR04RnR_6H0U3dI-0kBdzQ',
+      lastRoll: 76,
+      theory: ['CN', 'DBMS', 'SPOS', 'TOC'],
+      labs: ['CNSL', 'DBMSL', 'LP1'],
+      disabled: [],
+      batches: {
+        "1": {
+          start: 1,
+          end: 25,
+        },
+        "2": {
+          start: 26,
+          end: 50,
+        },
+        "3": {
+          start: 51,
+          end: 76,
+        },
+      },
+      hasElectives: true,
+      electiveSheetName: 'EL1',
+      electives: [
+        {
+          name: 'HCI'
+        },
+        {
+          name: 'SPM'
+        },
+        {
+          name: 'IOT'
+        }
+      ]
+    },
+    D: {
+      sheetId: '1pMuCavfsLGb1gmuOa599pNyvZhVtod_M8JowHDLNGQs',
+      lastRoll: 79,
+      theory: ['CN', 'DBMS', 'SPOS', 'TOC'],
+      labs: ['CNSL', 'DBMSL', 'LP1'],
+      disabled: [],
+      batches: {
+        "1": {
+          start: 1,
+          end: 26,
+        },
+        "2": {
+          start: 27,
+          end: 52,
+        },
+        "3": {
+          start: 53,
+          end: 79,
+        },
+      },
+      hasElectives: true,
+      electiveSheetName: 'EL1',
+      electives: [
+        {
+          name: 'HCI'
+        },
+        {
+          name: 'SPM'
+        },
+        {
+          name: 'IOT'
         }
       ]
     },
