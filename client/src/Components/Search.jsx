@@ -47,6 +47,11 @@ const Search = () => {
       setStudentList(data)
     }catch(err){
       console.log(err)
+      goto('/error',{
+        state:{
+          errorMessage:err.message
+        }
+      })
     }
   }
   useEffect(() => {

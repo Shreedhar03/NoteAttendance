@@ -5,13 +5,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
 
 const Login = () => {
-    const {checkAuthState, userMessage,checkLoggedIn, signInWithGoogle } = useContext(AppContext)
+    const { checkAuthState, userMessage, checkLoggedIn, signInWithGoogle } = useContext(AppContext)
     const goto = useNavigate()
 
-    useEffect(()=>{
+    useEffect(() => {
         checkAuthState()
         !checkLoggedIn && goto('/selection')
-    },[])
+    }, [])
     return (
         <div className='h-[80vh] flex flex-col items-center justify-center gap-20'>
             <div className="logo flex items-center">
@@ -28,14 +28,21 @@ const Login = () => {
                 </div>
                 <input type="submit" value="Proceed" className='bg-[var(--primary)] p-4 mt-8 rounded-lg text-white' />
     </form>*/}
-            <>
-                <div onClick={signInWithGoogle} className='flex items-center gap-3 shadow-lg rounded-lg bg-gray-50 px-6 py-3'>
-                    <img src={Google} alt="" />
-                    <p className=''>Continue with Google</p>
-                </div>
-                <p className='text-center text-red-600'>{userMessage}</p>
-            </>
-               
+
+            {
+                checkLoggedIn ?
+
+                    <Link to={'/selection'} className='px-8 py-3 bg-[var(--primary)] text-white rounded-xl'>Continue</Link>
+                    :
+                    <>
+                        <div onClick={signInWithGoogle} className='flex items-center gap-3 shadow-lg rounded-lg bg-gray-50 px-6 py-3'>
+                            <img src={Google} alt="" />
+                            <p className='cursor-pointer'>Continue with Google</p>
+                        </div>
+                        <p className='text-center text-red-600'>{userMessage}</p>
+                    </>
+            }
+
         </div>
     )
 }

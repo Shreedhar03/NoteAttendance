@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 
 const DailyReport = () => {
     const [record, setRecord] = useState([])
+    const [recordDate, setRecordDate] = useState()
     const { db } = useContext(AppContext)
     const [date, setDate] = useState(new Date())
     const getData = async () => {
@@ -17,6 +18,9 @@ const DailyReport = () => {
             rawData.push(doc.data())
         })
         setRecord(rawData)
+        setRecordDate(record[0]?.["A"]?.["Dated"] || record[1]?.["A"]?.["Dated"] || record[2]?.["A"]?.["Dated"])
+        console.log("record", record)
+        console.log("recordDate", recordDate)
         // console.log("rawData", rawData)
     }
 
@@ -31,7 +35,8 @@ const DailyReport = () => {
                 <p className='text-gray-700'>First Lecture</p>
             </div>
             <p className="font-semibold border-2 border-black rounded-lg self-start p-1">
-                {date.toDateString()}
+                {/* {date.toDateString()} */}
+                {recordDate && recordDate}
             </p>
 
             <div className='mt-4'>

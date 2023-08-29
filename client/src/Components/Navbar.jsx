@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
 import axios from 'axios'
@@ -8,13 +8,13 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore'
 
 const now = moment()
 tz.setDefault('Asia/Kolkata')
-const today = now.format('DD MMM YYYY')
+const today = now.format('ddd DD MMM YYYY')
 
 const Navbar = (props) => {
   const date = props.date.getDate().toString()
   const month = (props.date.getMonth() + 1).toString()
   const reqDate = month < 10 ? date + '/0' + month : date + '/' + month
-  const {showErrorPage, db, students, presentStudents, setPresentStudents, formValues, overwrite, setSubmitted } = useContext(AppContext)
+  const { showErrorPage, db, students, presentStudents, setPresentStudents, formValues, overwrite, setSubmitted, userName, userEmail } = useContext(AppContext)
   const navigate = useNavigate()
 
   const docRef = doc(db, 'noteattendance', formValues.year)
@@ -22,7 +22,7 @@ const Navbar = (props) => {
 
   const checkDate = async () => {
     const existingData = await getDoc(docRef)
-    
+
     if (existingData?.data()?.[formValues.div]?.['Dated'] !== today) {
       console.log("not today")
       await updateDoc(docRef, {
@@ -58,7 +58,11 @@ const Navbar = (props) => {
     }
     try {
 
-      if ((existingData?.data()[formValues.div]['Dated'] === today && formValues.session === "Theory") || existingData?.data()[formValues.div]?.flag === true) {
+      if (
+        (existingData?.data()[formValues.div]['Dated'] === today && formValues.session === "Theory")
+        || existingData?.data()[formValues.div]?.flag === true
+        || (existingData?.data()[formValues.div]['Dated'] === today && existingData?.data()[formValues.div]?.outOf?.length === 4)) {
+        console.log("existingData?.data()[formValues.div]?.outOf?.length", existingData?.data()[formValues.div]?.outOf?.length)
         console.log("1st lecture already taken")
         console.log(existingData?.data()[formValues.div]['Dated'] === today)
         console.log(formValues.session === "Theory")
@@ -83,7 +87,7 @@ const Navbar = (props) => {
     console.log("ok")
     try {
       let { data } = await axios.post(`http://localhost:8080/api/mark_attendance`, {
-        ...formValues, presentStudents, reqDate, overwrite
+        ...formValues, presentStudents, reqDate, overwrite, userName, userEmail
       })
       setPresentStudents([])
       localStorage.removeItem('presentStudents')

@@ -39,7 +39,7 @@ setPersistence(auth, browserLocalPersistence)
 
 const provider = new GoogleAuthProvider()
 // permitted users
-const permittedUsers = ['urawane03@gmail.com', 'yash25.j@gmail.com']
+const permittedUsers = ['urawane03@gmail.com','21511642.dypit@dypvp.edu.in', 'yash25.j@gmail.com']
 export const AppContext = createContext()
 
 const getStudents = () => {
@@ -93,7 +93,9 @@ function App() {
   const [presentStudents, setPresentStudents] = useState(getStudents())
   const [submitted, setSubmitted] = useState(false)
   const [checkLoggedIn, setCheckLoggedIn] = useState(false)
-  const [user, setUser] = useState('')
+  const [userName, setUserName] = useState('')
+  const [userEmail, setUserEmail] = useState('')
+  const [userPic,setUserPic]=useState('https://randomuser.me/api/portraits/men/44.jpg')
   const [userMessage, setUserMessage] = useState('')
   const [entryExists, setEntryExists] = useState(false)
   const [overwrite, setOverwrite] = useState(false)
@@ -110,14 +112,16 @@ function App() {
     onAuthStateChanged(auth, (user) => {
       if (user && permittedUsers.includes(user.email)) {
         // setIsLoggedIn(true)
+        console.log(user.photoURL)
+        setUserPic(user.photoURL)
         setCheckLoggedIn(true)
-        setUser(user.displayName)
+        setUserName(user.displayName)
+        setUserEmail(user.email)
+        localStorage.setItem("userImage",user.photoURL)
         setUserMessage('')
       } else {
         goto('/')
         setCheckLoggedIn(false)
-        // setIsLoggedIn(false)
-        // setUserMessage("Login to Continue")
       }
     })
   }
@@ -140,7 +144,12 @@ function App() {
         goto('/selection')
       })
       .catch((err) => {
-        console.log('error signing in')
+        goto('/err',{
+          state:{
+            errorMessage:err
+          }
+        })
+        console.log('error signing in',err)
       })
   }
 
@@ -189,7 +198,9 @@ function App() {
       userMessage,
       signInWithGoogle,
       signOutWithGoogle,
-      user,
+      userName,
+      userEmail,
+      userPic,
       entryExists,
       setEntryExists,
       overwrite,
