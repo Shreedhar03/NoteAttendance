@@ -119,6 +119,7 @@ app.get('/api/get_students', async (req, res) => {
 })
 
 app.post("/api/mark_attendance", async (req, res) => {
+  console.log(req.body)
   console.log("MARKING ATTENDANCE")
   try {
     // Getting data from request

@@ -5,18 +5,17 @@ import { AppContext } from '../App'
 import axios from 'axios'
 
 const Choices = () => {
-    const {subjects, getStructure,checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, user } = useContext(AppContext)
+    const { subjects, getStructure, checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, userName } = useContext(AppContext)
     const goto = useNavigate()
-   
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value })
         // console.log("formValues.year",formValues.year)
     }
     const handleSubmit = (e) => {
         e.preventDefault()
-        if(formValues.session==="Practical"){
+        if (formValues.session === "Practical") {
             setFormValues({
-                ...formValues,subject:formValues.labSubject
+                ...formValues, subject: formValues.labSubject
             })
         }
         goto('/attendance')
@@ -32,9 +31,9 @@ const Choices = () => {
             labSubject: subjects[formValues.year].labs[0],
             batch: subjects[formValues.year].batches[0]
         })
-        console.log("subjects[formValues.year].theory[0]",subjects[formValues.year].theory[0])
-        console.log("subjects",subjects)
-    }, [formValues.year,formValues.div])
+        console.log("subjects[formValues.year].theory[0]", subjects[formValues.year].theory[0])
+        console.log("subjects", subjects)
+    }, [formValues.year, formValues.div])
     useEffect(() => {
         checkAuthState()
     }, [])
@@ -43,8 +42,9 @@ const Choices = () => {
         <>
             <nav className='px-6 py-3 sticky top-0 z-20 bg-white flex justify-between items-center shadow-md'>
                 <div className='flex items-center gap-1'>
-                    <i className='bx bxs-user-circle text-xl' ></i>
-                    <span>{user}</span>
+                    {/* <i className='bx bxs-user-circle text-xl' ></i> */}
+                    {/* <img src={localStorage.getItem("userImage").toString()} alt="profile" className='w-3 h-3' /> */}
+                    <span>{userName}</span>
                 </div>
                 <button className='text-sm bg-red-700 p-1 px-2 text-white rounded-lg' onClick={signOutWithGoogle}>Logout</button>
             </nav>
