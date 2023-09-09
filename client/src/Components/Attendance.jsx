@@ -81,13 +81,9 @@ const Attendance = () => {
         fetchStudents()
         checkAuthState()
         setDate(new Date())
-        console.log("fetching students...")
-        console.log("entry", entryExists)
     }, [])
     useEffect(() => {
-        console.log("presentStudents from Attendance.jsx", presentStudents)
         localStorage.setItem('presentStudents', JSON.stringify(presentStudents))
-        console.log(JSON.parse(localStorage.getItem("presentStudents")).length)
     }, [presentStudents])
 
     return (

@@ -31,7 +31,6 @@ const Choices = () => {
             labSubject: subjects[formValues.year].labs[0],
             batch: subjects[formValues.year].batches[0]
         })
-        console.log("subjects[formValues.year].theory[0]", subjects[formValues.year].theory[0])
         console.log("subjects", subjects)
     }, [formValues.year, formValues.div])
     useEffect(() => {

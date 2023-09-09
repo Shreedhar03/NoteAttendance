@@ -11,9 +11,11 @@ tz.setDefault('Asia/Kolkata')
 const today = now.format('ddd DD MMM YYYY')
 
 const Navbar = (props) => {
-  const date = props.date.getDate().toString()
-  const month = (props.date.getMonth() + 1).toString()
-  const reqDate = month < 10 ? date + '/0' + month : date + '/' + month
+  const date = props.date.getDate().toString() < 10 ? "0" + props.date.getDate().toString() : props.date.getDate().toString()
+  const month = (props.date.getMonth() + 1).toString() < 10 ? "0" + (props.date.getMonth() + 1).toString() : (props.date.getMonth() + 1).toString()
+
+  // const reqDate = month < 10 ? date + '/0' + month : date + '/' + month
+  const reqDate = date + '/' + month
   const { showErrorPage, db, students, presentStudents, setPresentStudents, formValues, overwrite, setSubmitted, userName, userEmail } = useContext(AppContext)
   const navigate = useNavigate()
 
@@ -57,17 +59,17 @@ const Navbar = (props) => {
       flag: formValues.session == "Theory" ? true : false
     }
     try {
-
+      if(existingData?.data()[formValues.div]['Dated']!==today){
+        await updateDoc(docRef,{
+          // deletes all the divisions' data
+        })
+        console.log("deleting all the entries")
+      }
       if (
         (existingData?.data()[formValues.div]['Dated'] === today && formValues.session === "Theory")
         || existingData?.data()[formValues.div]?.flag === true
         || (existingData?.data()[formValues.div]['Dated'] === today && existingData?.data()[formValues.div]?.outOf?.length === 4)) {
-        console.log("existingData?.data()[formValues.div]?.outOf?.length", existingData?.data()[formValues.div]?.outOf?.length)
         console.log("1st lecture already taken")
-        console.log(existingData?.data()[formValues.div]['Dated'] === today)
-        console.log(formValues.session === "Theory")
-        console.log(existingData?.data()[formValues.div]?.flag === true)
-
       } else {
         await updateDoc(docRef, {
           [formValues.div]: record
