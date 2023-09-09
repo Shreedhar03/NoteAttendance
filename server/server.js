@@ -122,7 +122,7 @@ app.post("/api/mark_attendance", async (req, res) => {
   console.log("MARKING ATTENDANCE")
   try {
     // Getting data from request
-    const { year, div, subject, batch, presentStudents, reqDate, overwrite = false } = req.body
+    const { year, div, subject, batch, presentStudents, reqDate, userName, userEmail, overwrite = false } = req.body
 
     // Preliminary checks
     // Uses structure declared above to compare requested 'subject' string
@@ -246,6 +246,25 @@ app.post("/api/mark_attendance", async (req, res) => {
       }
     }
 
+    // Forming note string
+    console.log("ONE")
+    let msg = `Updated on ${DateTime.now().toFormat("dd/MM' at 'HH':'mm")} by ${userName} (${userEmail})\n`
+
+    // Getting index for note (selecting appropriate total cell in case of lab)
+    console.log("HALF")
+    let noteIndex = currentClass.lastRoll + 1
+    if (currentClass.labs.includes(subject)) {
+      noteIndex = currentClass.lastRoll + parseInt(batch)
+    }
+
+    // Writing note to cell
+    if (sheet.getCell(noteIndex, effectiveIndex).note === undefined) {
+      sheet.getCell(noteIndex, effectiveIndex).note = msg
+    } else {
+      sheet.getCell(noteIndex, effectiveIndex).note += msg
+    }
+
+    console.log("FIVE")
     await sheet.saveUpdatedCells()
     res.send("SUCCESS")
 
@@ -386,23 +405,14 @@ app.get('/api/test', async (req, res) => {
   await sheet.loadCells()
   let originalIndex = sheet.headerValues.indexOf('16/08')
   let currentIndex = originalIndex
-  while (sheet.getCell(0, currentIndex).formattedValue.includes('16/08')) {
-    currentIndex++
+
+  let msg = `Updated at ${DateTime.now().toFormat("HH':'mm' 'dd/MM")} by Yash Jawale (yash@gmail.com)\n`
+
+  if (sheet.getCell(currentClass.lastRoll + 1, originalIndex).note === undefined) {
+    sheet.getCell(currentClass.lastRoll + 1, originalIndex).note = msg
+  } else {
+    sheet.getCell(currentClass.lastRoll + 1, originalIndex).note += msg
   }
-
-
-  // Inserting new column
-  sheet.insertDimension('COLUMNS', { startIndex: currentIndex, endIndex: currentIndex + 1 }, true)
-
-  // Resetting cache
-  sheet.resetLocalCache()
-  await doc.loadInfo()
-  await sheet.loadCells()
-
-  sheet.getCell(0, currentIndex).value = `${sheet.getCell(0, originalIndex).formattedValue}-${currentIndex - originalIndex + 1}`
-  const a1 = sheet.getCell(currentClass.lastRoll + 1, currentIndex).a1Column
-  // Setting bottom formula
-  sheet.getCell(currentClass.lastRoll + 1, currentIndex).formula = `=SUM(${a1}2:${a1}${currentClass.lastRoll})`
 
   await sheet.saveUpdatedCells()
   console.log("DONE")
