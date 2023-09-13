@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const Year = (props) => {
     props.divisions.sort((a, b) => {
@@ -25,13 +25,19 @@ const Year = (props) => {
             <p className='h-5 text-xl'>
                 {presentCount}/{total}
             </p> : 
-            <p>
-                ----
+            <p className='text-sm'>
+                No record found for today
             </p>
         )
     }
+    useEffect(()=>{
+        console.log("props.rep",props.rep)
+        console.log("props.divisions",props.divisions)
+
+        
+    },[])
     return (
-        <div className='p-5 rounded-xl border-2 border-black my-6'>
+        <div className={`p-5 rounded-xl border-2 border-black my-6 ${props.divisions.length===0 && 'hidden'}`}>
             <h1 className='text-[var(--primary)] font-semibold text-2xl'>{props.year}</h1>
             <div className="grid grid-cols-2 gap-4 mt-4">
                 {

@@ -4,7 +4,7 @@ import { AppContext } from '../App'
 import axios from 'axios'
 import moment from 'moment'
 import { tz } from 'moment-timezone'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'
 
 const now = moment()
 tz.setDefault('Asia/Kolkata')
@@ -22,31 +22,10 @@ const Navbar = (props) => {
   const docRef = doc(db, 'noteattendance', formValues.year)
   let rollNos, outOf;
 
-  const checkDate = async () => {
-    const existingData = await getDoc(docRef)
-
-    if (existingData?.data()?.[formValues.div]?.['Dated'] !== today) {
-      console.log("not today")
-      await updateDoc(docRef, {
-        [formValues.div]: {
-          ...existingData?.data()[formValues.div],
-          flag: false
-        }
-      })
-      rollNos = [0], outOf = [0]
-    } else {
-      rollNos = existingData?.data()[formValues.div]?.presentCount || [0]
-      outOf = existingData?.data()[formValues.div]?.outOf || [0]
-    }
-
-    markFirstLecture()
-    console.log(rollNos, '/', outOf)
-
-  }
-
   const markFirstLecture = async () => {
 
     const existingData = await getDoc(docRef)
+    console.log("existingData", existingData?.data()[formValues.div]['Dated'])
     const record = {
       year: formValues.year,
       subject: formValues.subject,
@@ -59,8 +38,8 @@ const Navbar = (props) => {
       flag: formValues.session == "Theory" ? true : false
     }
     try {
-      if(existingData?.data()[formValues.div]['Dated']!==today){
-        await updateDoc(docRef,{
+      if (existingData?.data()[formValues.div]['Dated'] !== today) {
+        await updateDoc(docRef, {
           // deletes all the divisions' data
         })
         console.log("deleting all the entries")
@@ -82,6 +61,29 @@ const Navbar = (props) => {
       showErrorPage(err.message)
       console.log(err)
     }
+  }
+  const checkDate = async () => {
+    const existingData = await getDoc(docRef)
+
+    if (existingData?.data()?.[formValues.div]?.['Dated'] !== today) {
+      console.log("not today")
+
+      await updateDoc(docRef, {
+        "A": {},
+        "B": {},
+        "C": {},
+        "D": {}
+      })
+
+      rollNos = [0], outOf = [0]
+    } else {
+      rollNos = existingData?.data()[formValues.div]?.presentCount || [0]
+      outOf = existingData?.data()[formValues.div]?.outOf || [0]
+    }
+
+    markFirstLecture()
+    console.log(rollNos, '/', outOf)
+
   }
 
   const handleSubmit = async () => {
@@ -114,3 +116,15 @@ const Navbar = (props) => {
 }
 
 export default Navbar
+
+
+/*
+      // await updateDoc(docRef, {
+      //   [formValues.div]: {
+      //     ...existingData?.data()[formValues.div],
+      //     flag: false
+      //   }
+      // })
+      // await docRef.delete()
+
+*/

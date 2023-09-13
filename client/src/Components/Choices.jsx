@@ -31,7 +31,7 @@ const Choices = () => {
             labSubject: subjects[formValues.year].labs[0],
             batch: subjects[formValues.year].batches[0]
         })
-        console.log("subjects", subjects)
+        // console.log("subjects", subjects)
     }, [formValues.year, formValues.div])
     useEffect(() => {
         checkAuthState()
