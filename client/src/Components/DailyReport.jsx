@@ -24,7 +24,7 @@ const DailyReport = () => {
         console.log("tempArr", tempArr)
         setRecord(tempArr)
         console.log("tempArr", tempArr)
-        setRecordDate(tempArr[0]?.["A"]?.["Dated"] || tempArr[1]?.["A"]?.["Dated"] || tempArr[2]?.["A"]?.["Dated"])
+        setRecordDate(tempArr[0]?.['record']?.[0]?.["A"]?.["Dated"] || tempArr[1]?.['record']?.[0]?.["A"]?.["Dated"] || tempArr[2]?.['record']?.[0]?.["A"]?.["Dated"])
     }
 
     useEffect(() => {

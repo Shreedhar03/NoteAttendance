@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
-import axios from 'axios'
+import axios, { all } from 'axios'
 import moment from 'moment'
 import { tz } from 'moment-timezone'
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'
@@ -20,6 +20,8 @@ const Navbar = (props) => {
   const navigate = useNavigate()
 
   const docRef = doc(db, 'noteattendance', formValues.year)
+  const docRefSE = doc(db, 'noteattendance', "SE")
+  const docRefTE = doc(db, 'noteattendance', "TE")
   let rollNos, outOf;
 
   const markFirstLecture = async () => {
@@ -39,9 +41,9 @@ const Navbar = (props) => {
     }
     try {
       if (existingData?.data()[formValues.div]['Dated'] !== today) {
-        await updateDoc(docRef, {
-          // deletes all the divisions' data
-        })
+        // await updateDoc(docRef, {
+        //   // deletes all the divisions' data
+        // })
         console.log("deleting all the entries")
       }
       if (
@@ -64,8 +66,10 @@ const Navbar = (props) => {
   }
   const checkDate = async () => {
     const existingData = await getDoc(docRef)
+    const existingDataSE = await getDoc(docRefSE)
+    const existingDataTE = await getDoc(docRefTE)
 
-    if (existingData?.data()?.[formValues.div]?.['Dated'] !== today) {
+    if (existingData?.data()?.[formValues.div]?.['Dated'] !== today && (Object.keys(existingData?.data()?.[formValues.div])).length !== 0) {
       console.log("not today")
 
       await updateDoc(docRef, {
@@ -75,8 +79,29 @@ const Navbar = (props) => {
         "D": {}
       })
 
+      let SE = existingDataSE.data()
+      let TE = existingDataTE.data()
+      // Check if the date is old, then delete the entries .............. 
+      for (const div in SE) {
+        console.log(SE[div])
+        if(SE[div]?.['Dated']!==today){
+          await updateDoc(docRefSE,{
+            [div] : {}
+          })
+        }
+      }
+      for (const div in TE) {
+        console.log(TE[div])
+        if(TE[div]?.['Dated']!==today){
+          await updateDoc(docRefTE,{
+            [div] : {}
+          })
+        }
+      }
+
       rollNos = [0], outOf = [0]
-    } else {
+    }
+    else {
       rollNos = existingData?.data()[formValues.div]?.presentCount || [0]
       outOf = existingData?.data()[formValues.div]?.outOf || [0]
     }
@@ -103,6 +128,7 @@ const Navbar = (props) => {
       showErrorPage(err.message)
     }
   }
+
 
   return (
     <nav className={`sticky top-0 bg-white z-20 px-6 ${props.navShodow && 'drop-shadow-2xl'} transition-all flex items-center justify-between gap-3 py-4`}>

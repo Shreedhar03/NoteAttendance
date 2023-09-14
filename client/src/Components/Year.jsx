@@ -33,8 +33,6 @@ const Year = (props) => {
     useEffect(()=>{
         console.log("props.rep",props.rep)
         console.log("props.divisions",props.divisions)
-
-        
     },[])
     return (
         <div className={`p-5 rounded-xl border-2 border-black my-6 ${props.divisions.length===0 && 'hidden'}`}>
