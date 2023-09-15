@@ -1,3 +1,4 @@
+import React from 'react'
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import {
@@ -40,7 +41,7 @@ setPersistence(auth, browserLocalPersistence)
 
 const provider = new GoogleAuthProvider()
 // permitted users
-const permittedUsers = ['urawane03@gmail.com','21511642.dypit@dypvp.edu.in', 'yash25.j@gmail.com']
+const permittedUsers = ['urawane03@gmail.com', '21511642.dypit@dypvp.edu.in', 'yash25.j@gmail.com']
 export const AppContext = createContext()
 
 const getStudents = () => {
@@ -96,14 +97,14 @@ function App() {
   const [checkLoggedIn, setCheckLoggedIn] = useState(false)
   const [userName, setUserName] = useState('')
   const [userEmail, setUserEmail] = useState('')
-  const [userPic,setUserPic]=useState(user)
+  const [userPic, setUserPic] = useState(user)
   const [userMessage, setUserMessage] = useState('')
   const [entryExists, setEntryExists] = useState(false)
   const [overwrite, setOverwrite] = useState(false)
   const goto = useNavigate()
-  const showErrorPage = (errorMessage)=>{
-    goto('/error',{
-      state:{
+  const showErrorPage = (errorMessage) => {
+    goto('/error', {
+      state: {
         errorMessage
       }
     })
@@ -118,7 +119,7 @@ function App() {
         setCheckLoggedIn(true)
         setUserName(user.displayName)
         setUserEmail(user.email)
-        localStorage.setItem("userImage",user.photoURL)
+        localStorage.setItem("userImage", user.photoURL)
         setUserMessage('')
       } else {
         goto('/')
@@ -145,12 +146,12 @@ function App() {
         goto('/selection')
       })
       .catch((err) => {
-        goto('/err',{
-          state:{
-            errorMessage:err
+        goto('/err', {
+          state: {
+            errorMessage: err
           }
         })
-        console.log('error signing in',err)
+        console.log('error signing in', err)
       })
   }
 
@@ -173,6 +174,7 @@ function App() {
   useEffect(() => {
     localStorage.setItem('formValues', JSON.stringify(formValues))
   }, [formValues])
+
   return (
     <AppContext.Provider value={{
       showErrorPage,
