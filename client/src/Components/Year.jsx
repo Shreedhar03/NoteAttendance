@@ -30,12 +30,12 @@ const Year = (props) => {
             </p>
         )
     }
-    useEffect(()=>{
-        console.log("props.rep",props.rep)
-        console.log("props.divisions",props.divisions)
-    },[])
+    // useEffect(()=>{
+    //     console.log("props.rep",props.rep)
+    //     console.log("props.divisions",props.divisions)
+    // },[])
     return (
-        <div className={`p-5 rounded-xl border-2 border-black my-6 ${props.divisions.length===0 && 'hidden'}`}>
+        <div className={`p-5 rounded-xl border-2 border-black my-6 ${props.divisions.length===0 && 'hidden'} ${props.year==="Dated" && 'hidden'}`}>
             <h1 className='text-[var(--primary)] font-semibold text-2xl'>{props.year}</h1>
             <div className="grid grid-cols-2 gap-4 mt-4">
                 {

@@ -4,7 +4,7 @@ import { AppContext } from '../App'
 import axios, { all } from 'axios'
 import moment from 'moment'
 import { tz } from 'moment-timezone'
-import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore'
 
 const now = moment()
 tz.setDefault('Asia/Kolkata')
@@ -40,12 +40,12 @@ const Navbar = (props) => {
       flag: formValues.session == "Theory" ? true : false
     }
     try {
-      if (existingData?.data()[formValues.div]['Dated'] !== today) {
-        // await updateDoc(docRef, {
-        //   // deletes all the divisions' data
-        // })
-        console.log("deleting all the entries")
-      }
+
+      const dateRef = doc(db, "noteattendance", "Dated")
+      await updateDoc(dateRef, {
+        "dated": today
+      })
+
       if (
         (existingData?.data()[formValues.div]['Dated'] === today && formValues.session === "Theory")
         || existingData?.data()[formValues.div]?.flag === true
@@ -79,31 +79,35 @@ const Navbar = (props) => {
         "D": {}
       })
 
-      let SE = existingDataSE.data()
-      let TE = existingDataTE.data()
-      // Check if the date is old, then delete the entries .............. 
-      for (const div in SE) {
-        console.log(SE[div])
-        if(SE[div]?.['Dated']!==today){
-          await updateDoc(docRefSE,{
-            [div] : {}
-          })
-        }
-      }
-      for (const div in TE) {
-        console.log(TE[div])
-        if(TE[div]?.['Dated']!==today){
-          await updateDoc(docRefTE,{
-            [div] : {}
-          })
-        }
-      }
-
       rollNos = [0], outOf = [0]
     }
     else {
       rollNos = existingData?.data()[formValues.div]?.presentCount || [0]
       outOf = existingData?.data()[formValues.div]?.outOf || [0]
+    }
+
+    // delete all other year's previous attendance record
+
+    let SE = existingDataSE.data()
+    let TE = existingDataTE.data()
+    // Check if the date is old, then delete the entries .............. 
+    for (const div in SE) {
+      console.log(SE[div])
+      if (SE[div]?.['Dated'] !== today) {
+        console.log("SE[div]?.['Dated']", SE[div]?.['Dated'])
+        await updateDoc(docRefSE, {
+          [div]: {}
+        })
+      }
+    }
+    for (const div in TE) {
+      console.log(TE[div])
+      if (TE[div]?.['Dated'] !== today) {
+        console.log("TE[div]?.['Dated']", TE[div]?.['Dated'])
+        await updateDoc(docRefTE, {
+          [div]: {}
+        })
+      }
     }
 
     markFirstLecture()
