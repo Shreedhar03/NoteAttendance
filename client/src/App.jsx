@@ -130,7 +130,7 @@ function App() {
 
   // 
   const fetchStructure = async () => {
-    let { data } = await axios.get(`http://localhost:8080/api/get_structure`)
+    let { data } = await axios.get(`https://noteattendance.glitch.me/server/api/get_structure`)
     console.log("structure:", data)
     setSubjects(data)
     localStorage.setItem('structure', JSON.stringify(data))

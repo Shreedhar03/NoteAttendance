@@ -119,7 +119,7 @@ const Navbar = (props) => {
     navigate('/feedback')
     console.log("ok")
     try {
-      let { data } = await axios.post(`http://localhost:8080/api/mark_attendance`, {
+      let { data } = await axios.post(`https://noteattendance.glitch.me/api/mark_attendance`, {
         ...formValues, presentStudents, reqDate, overwrite, userName, userEmail
       })
       setPresentStudents([])
