@@ -40,7 +40,7 @@ const Search = () => {
     setLoading(true)
     const values = { year, div }
     try{
-      let { data } = await axios.get(`https://noteattendance.glitch.me/api/search_students`,
+      let { data } = await axios.get(`https://noteattendance.onrender.com/api/search_students`,
       { params: values }
       )
       console.log(data)

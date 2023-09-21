@@ -34,7 +34,7 @@ const Student_Info = () => {
         )
     }
     const fetchRecord = async () => {
-        let { data } = await axios.post(`https://noteattendance.glitch.me/api/get_report`, student_data)
+        let { data } = await axios.post(`https://noteattendance.onrender.com/api/get_report`, student_data)
         console.log("data", data)
         setLoading(false)
         setRecord(data)

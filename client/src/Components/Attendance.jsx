@@ -26,7 +26,7 @@ const Attendance = () => {
 
     const fetchStudents = async () => {
         try {
-            const { data } = await axios.get(`https://noteattendance.glitch.me/api/get_students`,
+            const { data } = await axios.get(`https://noteattendance.onrender.com/api/get_students`,
                 { params: formValues }
             )
             setEntryExists(data.entryExists)
