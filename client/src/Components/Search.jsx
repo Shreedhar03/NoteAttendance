@@ -3,7 +3,7 @@ import { AppContext } from '../App'
 import StudentList from './StudentList'
 import axios from 'axios'
 import Loader from './Loader'
-import home from '../assets/home.svg'
+import arrow from '../assets/arrow.svg'
 import { useNavigate } from 'react-router-dom'
 
 const getStudents = ()=>{
@@ -11,7 +11,7 @@ const getStudents = ()=>{
 }
 const Search = () => {
   const goto=useNavigate()
-  const { checkAuthState } = useContext(AppContext)
+  const { isLoggedIn } = useContext(AppContext)
   const [loading, setLoading] = useState(true)
   const [students, setStudents] = useState(getStudents())
   const [year, setYear] = useState("TE")
@@ -60,7 +60,7 @@ const Search = () => {
   useEffect(() => {
     studentList.length===0 && fetchStudents()
     studentList.length!==0 && setLoading(false)
-    checkAuthState()
+    isLoggedIn()
   }, [])
   useEffect(() => {
     localStorage.setItem('searchStudents',JSON.stringify(students))
@@ -74,7 +74,9 @@ const Search = () => {
         {/* <button className='flex self-start' onClick={()=>goto('/selection')}>
           <img src={home} className='w-6' alt="home" />
         </button> */}
-        <button className='text-gray-600 text-3xl self-start' onClick={()=>goto('/selection')}>&larr;</button>
+        <button className='text-gray-600 text-3xl self-start mb-4 w-7' onClick={()=>goto('/selection')}>
+          <img src={arrow} alt="arrow" />
+        </button>
         <div className='flex justify-between'>
           <select name="year" id="year" value={year} onChange={(e) => {setYear(e.target.value);setDisableBtn(0)}} className='w-1/2 p-2 rounded-lg focus:outline-none bg-inherit border-2 border-gray-400'>
             <option value="SE">SE</option>

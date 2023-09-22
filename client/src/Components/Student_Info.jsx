@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
 import axios from 'axios'
 import Loader from './Loader'
+import arrow from '../assets/arrow.svg'
 
 const Student_Info = () => {
     const roll = window.location.href.split("/").slice(-1)[0]
@@ -14,7 +15,7 @@ const Student_Info = () => {
     }
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
-    const { checkAuthState } = useContext(AppContext)
+    const { isLoggedIn } = useContext(AppContext)
     const [record, setRecord] = useState({
         roll: '',
         name: '',
@@ -40,7 +41,7 @@ const Student_Info = () => {
         setRecord(data)
     }
     useEffect(() => {
-        checkAuthState()
+        isLoggedIn()
         fetchRecord()
         console.log(student_data)
     }, [])
@@ -49,9 +50,11 @@ const Student_Info = () => {
             <Loader />
             :
             <div className='flex flex-col bg-slate-10 px-6 my-6'>
-                <button className='self-start text-3xl text-gray-700' onClick={() => navigate('/search')}>&larr;</button>
+                <button className='self-start text-3xl text-gray-700 mb-4' onClick={() => navigate('/search')}>
+                    <img src={arrow} alt='arrow' />
+                </button>
                 <h1 className='text-2xl font-semibold text-[var(--primary)] mt-4'>{record.roll}</h1>
-                <h1 className='text-3xl font-light pb-2'>{record.name.split(' ')[0]}<br/>{record.name.substr(record.name.indexOf(" ") + 1)}</h1>
+                <h1 className='text-3xl font-light pb-2'>{record.name.split(' ')[0]}<br />{record.name.substr(record.name.indexOf(" ") + 1)}</h1>
                 <div className='flex justify-between mt-4 border-2 border-gray-400 rounded-xl p-3'>
                     <div className='border-r-2 w-1/2 pr-3 border-gray-400'>
                         <p className='text-base'>OVERALL</p>
@@ -65,7 +68,7 @@ const Student_Info = () => {
                         <h1 className='text-sm'>THEORY</h1>
                         <p>
                             <span className='text-4xl font-light'>
-                        {record.theory}
+                                {record.theory}
                             </span>
                         </p>
                         <h1 className='mt-2 text-sm'>LABS</h1>

@@ -5,7 +5,7 @@ import { AppContext } from '../App'
 import axios from 'axios'
 
 const Choices = () => {
-    const { subjects, getStructure, checkAuthState, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, userName,userPic } = useContext(AppContext)
+    const { subjects, getStructure, isLoggedIn, formValues, setFormValues, theorySubjects, setTheorySubjects, batches, setBatches, labSubjects, setLabSubjects, signOutWithGoogle, userName,userPic } = useContext(AppContext)
     const goto = useNavigate()
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value })
@@ -34,7 +34,7 @@ const Choices = () => {
         // console.log("subjects", subjects)
     }, [formValues.year, formValues.div])
     useEffect(() => {
-        checkAuthState()
+        isLoggedIn()
     }, [])
 
     return (

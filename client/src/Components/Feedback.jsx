@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom'
 import Loader from './Loader'
 const Feedback = () => {
     const navigate = useNavigate()
-    const { formValues, checkAuthState, submitted, setSubmitted } = useContext(AppContext)
+    const { formValues, isLoggedIn, submitted, setSubmitted } = useContext(AppContext)
     useEffect(() => {
-        checkAuthState()
+        isLoggedIn()
     }, [])
     return (
         submitted ?

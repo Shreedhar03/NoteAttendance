@@ -41,7 +41,7 @@ setPersistence(auth, browserLocalPersistence)
 
 const provider = new GoogleAuthProvider()
 // permitted users
-const permittedUsers = ['urawane03@gmail.com', '21511642.dypit@dypvp.edu.in', 'yash25.j@gmail.com']
+const permittedUsers = ['21511642.dypit@dypvp.edu.in', 'yash25.j@gmail.com']
 export const AppContext = createContext()
 
 const getStudents = () => {
@@ -127,8 +127,16 @@ function App() {
       }
     })
   }
+  // check if logged in
 
-  // 
+  const isLoggedIn = ()=>{
+    onAuthStateChanged(auth,user=>{
+      if(!user || !(permittedUsers.includes(user.email))){
+        goto('/')
+      }
+    })
+  }
+
   const fetchStructure = async () => {
     let { data } = await axios.get(`https://noteattendance.onrender.com/api/get_structure`)
     console.log("structure:", data)
@@ -177,6 +185,7 @@ function App() {
 
   return (
     <AppContext.Provider value={{
+      isLoggedIn,
       showErrorPage,
       subjects,
       getStructure,

@@ -3,11 +3,12 @@ import { getDocs, getDoc, collection, doc } from 'firebase/firestore'
 import Year from './Year'
 import { AppContext } from '../App'
 import { Link } from 'react-router-dom'
+import arrow from '../assets/arrow.svg'
 
 const DailyReport = () => {
     const [record, setRecord] = useState([])
     const [recordDate, setRecordDate] = useState('')
-    const { db } = useContext(AppContext)
+    const { db,isLoggedIn } = useContext(AppContext)
     const [date, setDate] = useState(new Date())
     const getData = async () => {
 
@@ -44,11 +45,14 @@ const DailyReport = () => {
 
     useEffect(() => {
         getData()
+        isLoggedIn()
         console.log("record", record)
     }, [])
     return (
         <section className='flex flex-col gap-2 px-4'>
-            <Link to={'/selection'} className='text-3xl text-gray-800 self-start my-4'>&larr;</Link>
+            <Link to={'/selection'} className='text-3xl text-gray-800 self-start my-6'>
+                <img src={arrow} alt='arrow'/>
+            </Link>
             <div>
                 <h2 className='text-3xl'>Attendance Overview</h2>
                 <p className='text-gray-700 font-semibold text-lg'>First Lecture</p>

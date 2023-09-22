@@ -14,7 +14,7 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 const Attendance = () => {
     const goto = useNavigate()
-    const {showErrorPage, setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, checkAuthState, presentStudents, setPresentStudents } = useContext(AppContext)
+    const {showErrorPage, setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, isLoggedIn, presentStudents, setPresentStudents } = useContext(AppContext)
     const [dialog, setDialog] = useState(false)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(false)
@@ -78,8 +78,8 @@ const Attendance = () => {
         setPresentStudents([])
     }
     useEffect(() => {
+        isLoggedIn()
         fetchStudents()
-        checkAuthState()
         setDate(new Date())
     }, [])
     useEffect(() => {

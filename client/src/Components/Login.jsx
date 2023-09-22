@@ -5,12 +5,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
 
 const Login = () => {
-    const { checkAuthState, userMessage, checkLoggedIn, signInWithGoogle } = useContext(AppContext)
+    const { isLoggedIn, userMessage, checkLoggedIn, signInWithGoogle } = useContext(AppContext)
     const goto = useNavigate()
 
     useEffect(() => {
-        checkAuthState()
-        !checkLoggedIn && goto('/selection')
+        isLoggedIn()
+        // !checkLoggedIn && goto('/selection')
     }, [])
     return (
         <div className='h-[80vh] flex flex-col items-center justify-center gap-20'>
