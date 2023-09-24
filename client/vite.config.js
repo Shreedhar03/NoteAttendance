@@ -33,6 +33,25 @@ const manifest = {
             "purpose": "maskable"
         }
     ],
+    shrotcuts:[
+        {
+            "name":"Today's Report",
+            "short_name":"Today's Report",
+            "url":"/daily-report",
+            "icons":[
+                {"src":"icons/search.png","sizes":"320x320"}
+            ]
+        },
+        {
+            "name":"Student Record",
+            "short_name":"Student Record",
+            "url":"/search",
+            "icons":[
+                {"src":"icons/report.png","sizes":"320x320"}
+            ]
+        }
+
+    ],
     theme_color: "#02825c",
     background_color: "#ffffff"
 }
