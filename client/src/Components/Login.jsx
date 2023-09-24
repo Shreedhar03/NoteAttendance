@@ -3,23 +3,25 @@ import logo from '../assets/logo.svg'
 import Google from '../assets/Google.svg'
 import { Link, useNavigate } from 'react-router-dom'
 import { AppContext } from '../App'
+import Loader from './Loader'
 
 const Login = () => {
-    const { isLoggedIn, userMessage, checkLoggedIn, signInWithGoogle } = useContext(AppContext)
-    const goto = useNavigate()
+    const { isLoggedIn, loading, userMessage, checkLoggedIn, signInWithGoogle } = useContext(AppContext)
 
     useEffect(() => {
         isLoggedIn()
         // !checkLoggedIn && goto('/selection')
     }, [])
     return (
-        <div className='h-[80vh] flex flex-col items-center justify-center gap-20'>
-            <div className="logo flex items-center">
-                <img src={logo} alt="logo" />
-                <div className='text-3xl flex flex-col font-semibold text-[var(--primary)]'><span>Note</span><span>Attendance</span></div>
-            </div>
+        loading ? <Loader />
+            :
+            <div className='h-[80vh] flex flex-col items-center justify-center gap-20'>
+                <div className="logo flex items-center">
+                    <img src={logo} alt="logo" />
+                    <div className='text-3xl flex flex-col font-semibold text-[var(--primary)]'><span>Note</span><span>Attendance</span></div>
+                </div>
 
-            {/*<p className='text-xl'>Login to Continue</p>
+                {/*<p className='text-xl'>Login to Continue</p>
             <form className='flex flex-col gap-3 w-[90%]' onSubmit={handleSubmit}>
                 <input type="text" required value={username} onChange={(e)=>setUsername(e.target.value)} placeholder='Username' className='text-lg py-[6px] px-2 rounded-lg focus:outline-none bg-inherit border-2 border-[var(--primary)] ' />
                 <div className="relative">
@@ -29,21 +31,22 @@ const Login = () => {
                 <input type="submit" value="Proceed" className='bg-[var(--primary)] p-4 mt-8 rounded-lg text-white' />
     </form>*/}
 
-            {
-                checkLoggedIn ?
+                {
+                    checkLoggedIn ?
 
-                    <Link to={'/selection'} className='px-8 py-3 bg-[var(--primary)] text-white rounded-xl'>Continue</Link>
-                    :
-                    <>
-                        <div onClick={signInWithGoogle} className='flex items-center gap-3 shadow-lg rounded-lg bg-gray-50 px-6 py-3'>
-                            <img src={Google} alt="" />
-                            <p className='cursor-pointer'>Continue with Google</p>
-                        </div>
-                        <p className='text-center text-red-600'>{userMessage}</p>
-                    </>
-            }
+                        <Link to={'/selection'} className='px-8 py-3 bg-[var(--primary)] text-white rounded-xl'>Continue</Link>
+                        :
 
-        </div>
+                        <>
+                            <div onClick={signInWithGoogle} className='flex items-center gap-3 shadow-lg rounded-lg bg-gray-50 px-6 py-3'>
+                                <img src={Google} alt="" />
+                                <p className='cursor-pointer'>Continue with Google</p>
+                            </div>
+                            <p className='text-center text-red-600'>{userMessage}</p>
+                        </>
+                }
+
+            </div>
     )
 }
 

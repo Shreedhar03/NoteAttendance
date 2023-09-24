@@ -101,6 +101,7 @@ function App() {
   const [userMessage, setUserMessage] = useState('')
   const [entryExists, setEntryExists] = useState(false)
   const [overwrite, setOverwrite] = useState(false)
+  const [loading,setLoading] = useState(true)
   const goto = useNavigate()
   const showErrorPage = (errorMessage) => {
     goto('/error', {
@@ -121,8 +122,10 @@ function App() {
         setUserEmail(user.email)
         localStorage.setItem("userImage", user.photoURL)
         setUserMessage('')
+        setLoading(false)
       } else {
         goto('/')
+        setLoading(false)
         setCheckLoggedIn(false)
       }
     })
@@ -132,7 +135,10 @@ function App() {
   const isLoggedIn = ()=>{
     onAuthStateChanged(auth,user=>{
       if(!user || !(permittedUsers.includes(user.email))){
+        setLoading(true)
         goto('/')
+      }else{
+        setLoading(false)
       }
     })
   }
@@ -145,6 +151,7 @@ function App() {
   }
   // Function to handle sign-in
   const signInWithGoogle = () => {
+    setLoading(true)
     signInWithPopup(auth, provider)
       .then((result) => {
         if (!permittedUsers.includes(result.user.email)) {
@@ -168,6 +175,7 @@ function App() {
     signOut(auth)
       .then(() => {
         console.log('Sign-out successful!')
+        setLoading(false)
       })
       .catch((error) => {
         console.error('Error signing out:', error)
@@ -217,7 +225,8 @@ function App() {
       setEntryExists,
       overwrite,
       setOverwrite,
-      db
+      db,
+      loading
     }}>
       <Routes>
         <Route path="/" element={<Login />}></Route>
