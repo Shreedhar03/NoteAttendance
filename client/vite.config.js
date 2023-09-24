@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const manifest = {
-    name: "NoteAttendance",
-    short_name: "NoteAttendance",
+    name: "NoteAttendance-Mobile",
+    short_name: "Note\nAttendance",
     start_url: "/",
     description: "A web app that helps instructors take attendance digitally & performs updates on spreadsheets automatically",
     icons: [
