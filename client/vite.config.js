@@ -33,7 +33,7 @@ const manifest = {
             "purpose": "maskable"
         }
     ],
-    shrotcuts:[
+    shortcuts:[
         {
             "name":"Today's Report",
             "short_name":"Today's Report",

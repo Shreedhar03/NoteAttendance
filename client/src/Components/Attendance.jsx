@@ -14,7 +14,7 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 const Attendance = () => {
     const goto = useNavigate()
-    const {showErrorPage, setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, isLoggedIn, presentStudents, setPresentStudents } = useContext(AppContext)
+    const { showErrorPage, setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, isLoggedIn, presentStudents, setPresentStudents } = useContext(AppContext)
     const [dialog, setDialog] = useState(false)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(false)
@@ -27,20 +27,24 @@ const Attendance = () => {
     const fetchStudents = async () => {
         try {
             const { data } = await axios.get(`https://noteattendance.onrender.com/api/get_students`,
-                { params: formValues }
+                { params: { ...formValues, token: localStorage.getItem('token') || ' ' } }
             )
-            setEntryExists(data.entryExists)
-            console.log("entryExist", data.entryExists)
-            setDialog(data.entryExists)
-            setStudents(data.students)
-            const alreadyPresent = data.students.filter(s => s.status === true).map(e => { return (e.roll) })
-            console.log("alreadyPresent", alreadyPresent)
-            // data.entryExists && console.log("entry check---------")  && console.log("hello","presentStudents") && setPresentStudents(alreadyPresent)
-            data.entryExists && setPresentStudents(alreadyPresent)
+            console.log(data)
+            if (data.success) {
+
+                setEntryExists(data.entryExists)
+                // console.log("entryExist", data.entryExists)
+                setDialog(data.entryExists)
+                setStudents(data.students)
+                const alreadyPresent = data.students.filter(s => s.status === true).map(e => { return (e.roll) })
+                // console.log("alreadyPresent", alreadyPresent)
+                // data.entryExists && console.log("entry check---------")  && console.log("hello","presentStudents") && setPresentStudents(alreadyPresent)
+                data.entryExists && setPresentStudents(alreadyPresent)
+            }
             setLoading(false)
         } catch (err) {
             showErrorPage(err.message)
-            console.log(err)
+            // console.log(err)
         }
     }
     window.addEventListener("scroll", () => {
@@ -54,7 +58,7 @@ const Attendance = () => {
     })
     const handleSelectAll = () => {
         if (selectAll) {
-            let selectAll = students.filter(s => s.name != null).map(stud => stud.roll)
+            let selectAll = students?.filter(s => s.name != null).map(stud => stud.roll)
             // console.log(selectAll)
             setPresentStudents(selectAll)
             setSelectAll(false)
@@ -106,7 +110,7 @@ const Attendance = () => {
                                     {date.getDate()} {months[date.getMonth()]} {date.getFullYear().toString().slice(2)}
                                 </div>
                             </div>
-                            <h2 className='text-3xl font-semibold'>{formValues.session==="Theory" ? formValues.subject : formValues.labSubject}</h2>
+                            <h2 className='text-3xl font-semibold'>{formValues.session === "Theory" ? formValues.subject : formValues.labSubject}</h2>
                         </div>
                         <section className={`my-8 flex flex-col gap-3 px-6 ${dialog && 'opacity-20'}`}>
                             <div className='self-end flex gap-2 mb-6'>

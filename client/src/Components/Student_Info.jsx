@@ -35,15 +35,17 @@ const Student_Info = () => {
         )
     }
     const fetchRecord = async () => {
-        let { data } = await axios.post(`https://noteattendance.onrender.com/api/get_report`, student_data)
-        console.log("data", data)
+        let { data } = await axios.post(`https://noteattendance.onrender.com/api/get_report`, {...student_data,token:localStorage.getItem('token') || ' '})
+        // console.log("data", data)
+        if(data.success){
+            setRecord(data.record)
+        }
         setLoading(false)
-        setRecord(data)
     }
     useEffect(() => {
         isLoggedIn()
         fetchRecord()
-        console.log(student_data)
+        // console.log(student_data)
     }, [])
     return (
         loading ?
@@ -54,12 +56,12 @@ const Student_Info = () => {
                     <img src={arrow} alt='arrow' />
                 </button>
                 <h1 className='text-2xl font-semibold text-[var(--primary)] mt-4'>{record.roll}</h1>
-                <h1 className='text-3xl font-light pb-2'>{record.name.split(' ')[0]}<br />{record.name.substr(record.name.indexOf(" ") + 1)}</h1>
+                <h1 className='text-3xl font-light pb-2'>{record?.name.split(' ')[0]}<br />{record?.name.substr(record?.name.indexOf(" ") + 1)}</h1>
                 <div className='flex justify-between mt-4 border-2 border-gray-400 rounded-xl p-3'>
                     <div className='border-r-2 w-1/2 pr-3 border-gray-400'>
                         <p className='text-base'>OVERALL</p>
                         <h1 className='text-6xl font-semibold text-[#008000] mt-2'>
-                            {record.overall}
+                            {record?.overall}
                         </h1>
 
                     </div>

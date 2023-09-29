@@ -41,15 +41,17 @@ const Search = () => {
     const values = { year, div }
     try{
       let { data } = await axios.get(`https://noteattendance.onrender.com/api/search_students`,
-      { params: values }
+      { params: {...values,token:localStorage.getItem('token') || ' '} }
       )
-      console.log(data)
+      // console.log(data)
       setLoading(false)
-      setStudents(data)
-      setStudentList(data)
-      setDisableBtn(1)
+      if(data.success){
+        setStudentList(data.students)
+        setStudents(data.students)
+        setDisableBtn(1)
+      }
     }catch(err){
-      console.log(err)
+      // console.log(err)
       goto('/error',{
         state:{
           errorMessage:err.message

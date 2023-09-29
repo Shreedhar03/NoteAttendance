@@ -19,7 +19,7 @@ const Choices = () => {
             })
         }
         goto('/attendance')
-        console.log(formValues)
+        // console.log(formValues)
     }
     useEffect(() => {
         setTheorySubjects(getStructure()[formValues.year]["theory"])

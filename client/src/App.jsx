@@ -11,7 +11,7 @@ import {
   browserLocalPersistence,
 } from 'firebase/auth'
 import { createContext, useEffect, useState } from 'react'
-import { Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import Login from './Components/Login'
 import Choices from './Components/Choices'
 import Attendance from './Components/Attendance'
@@ -86,12 +86,13 @@ const getStructure = () => {
 }
 
 function App() {
+  const routeMessage = useLocation()
   const [formValues, setFormValues] = useState(getFormValues)
   const [subjects, setSubjects] = useState(getStructure())
   const [theorySubjects, setTheorySubjects] = useState(getStructure()[formValues.year]["theory"])
   const [batches, setBatches] = useState(getStructure()[formValues.year]["batches"])
   const [labSubjects, setLabSubjects] = useState(getStructure()[formValues.year]["labs"])
-  const [students, setStudents] = useState()
+  const [students, setStudents] = useState([])
   const [presentStudents, setPresentStudents] = useState(getStudents())
   const [submitted, setSubmitted] = useState(false)
   const [checkLoggedIn, setCheckLoggedIn] = useState(false)
@@ -101,7 +102,7 @@ function App() {
   const [userMessage, setUserMessage] = useState('')
   const [entryExists, setEntryExists] = useState(false)
   const [overwrite, setOverwrite] = useState(false)
-  const [loading,setLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const goto = useNavigate()
   const showErrorPage = (errorMessage) => {
     goto('/error', {
@@ -132,32 +133,42 @@ function App() {
   }
   // check if logged in
 
-  const isLoggedIn = ()=>{
-    onAuthStateChanged(auth,user=>{
-      if(!user || !(permittedUsers.includes(user.email))){
-        setLoading(true)
+  const isLoggedIn = () => {
+    onAuthStateChanged(auth, user => {
+      setLoading(true)
+      if (!user || !(permittedUsers.includes(user.email))) {
         goto('/')
-      }else{
+        setLoading(false)
+        // ,{
+        //   state:{message:"Please login to Continue"}
+        // })
+      } else {
         setLoading(false)
       }
     })
   }
 
   const fetchStructure = async () => {
-    let { data } = await axios.get(`https://noteattendance.onrender.com/api/get_structure`)
-    console.log("structure:", data)
-    setSubjects(data)
-    localStorage.setItem('structure', JSON.stringify(data))
+    let { data } = await axios.get(`https://noteattendance.onrender.com/api/get_structure`, {
+      params: { token: localStorage.getItem('token') || " " }
+    })
+    console.log("structureData:", data)
+    if (data.success) {
+      setSubjects(data.structure)
+      localStorage.setItem('structure', JSON.stringify(data.structure))
+    }
   }
   // Function to handle sign-in
   const signInWithGoogle = () => {
     setLoading(true)
     signInWithPopup(auth, provider)
-      .then((result) => {
+      .then(async (result) => {
         if (!permittedUsers.includes(result.user.email)) {
           setUserMessage('Access Denied')
           return
         }
+        localStorage.setItem('token', (await result.user.getIdToken()).toString())
+        fetchStructure()
         goto('/selection')
       })
       .catch((err) => {
@@ -174,6 +185,7 @@ function App() {
   const signOutWithGoogle = () => {
     signOut(auth)
       .then(() => {
+        localStorage.removeItem('token')
         console.log('Sign-out successful!')
         setLoading(false)
       })
@@ -226,7 +238,8 @@ function App() {
       overwrite,
       setOverwrite,
       db,
-      loading
+      loading,
+      routeMessage
     }}>
       <Routes>
         <Route path="/" element={<Login />}></Route>

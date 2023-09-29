@@ -1,5 +1,6 @@
 // import dotenv from 'dotenv'
 const dotenv = require('dotenv')
+const {verifyToken} = require('./Middleware/verifyToken')
 dotenv.config()
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { JWT } = require('google-auth-library')
@@ -42,11 +43,11 @@ for (let key in config) {
 }
 // console.log(structure)
 
-app.get('/api/get_structure', (req, res) => {
-  res.json(structure)
+app.get('/api/get_structure', verifyToken, (req, res) => {
+  res.json({success:true,structure})
 })
 
-app.get('/api/get_students', async (req, res) => {
+app.get('/api/get_students', verifyToken, async (req, res) => {
 
   try {
 
@@ -111,14 +112,14 @@ app.get('/api/get_students', async (req, res) => {
       return res.status(400).send("Invalid request")
     }
 
-    res.json({ entryExists, students })
+    res.json({ entryExists, students,success:true })
   } catch (err) {
     console.log(err.message)
     return res.status(400).send("Invalid request")
   }
 })
 
-app.post("/api/mark_attendance", async (req, res) => {
+app.post("/api/mark_attendance", verifyToken, async (req, res) => {
   console.log("MARKING ATTENDANCE")
   try {
     // Getting data from request
@@ -275,7 +276,7 @@ app.post("/api/mark_attendance", async (req, res) => {
 })
 
 
-app.get('/api/search_students', async (req, res) => {
+app.get('/api/search_students', verifyToken, async (req, res) => {
   const { year, div } = req.query
   // Preliminary checks
   // Uses structure declared above to compare requested subject string
@@ -304,10 +305,10 @@ app.get('/api/search_students', async (req, res) => {
     }
   }
 
-  res.json(students)
+  res.json({success:true,students})
 })
 
-app.post('/api/get_report', async (req, res) => {
+app.post('/api/get_report', verifyToken, async (req, res) => {
   console.log("REPORT")
   // console.log(JSON.stringify(config))
   try {
@@ -388,7 +389,7 @@ app.post('/api/get_report', async (req, res) => {
     report.labsDist = labsDist
 
     console.log("SUCCESS")
-    res.json(report)
+    res.json({success:true,report})
 
   } catch (err) {
     console.log(err.message)
@@ -396,7 +397,7 @@ app.post('/api/get_report', async (req, res) => {
   }
 })
 
-app.get('/api/test', async (req, res) => {
+app.get('/api/test', verifyToken, async (req, res) => {
   const currentClass = config['TE']['A']
   const doc = new GoogleSpreadsheet(currentClass.sheetId, serviceAccountAuth)
   await doc.loadInfo()
@@ -417,4 +418,8 @@ app.get('/api/test', async (req, res) => {
   await sheet.saveUpdatedCells()
   console.log("DONE")
   res.send("DONE")
+})
+
+app.get('/testMiddleware' , verifyToken , (req,res)=>{
+  res.send('Verified')
 })

@@ -20,7 +20,7 @@ const DailyReport = () => {
         const docRef = doc(db, "noteattendance", "Dated");
         const docSnap = await getDoc(docRef);
         setRecordDate(docSnap.data()?.['dated'])
-        console.log(docSnap.data()?.['dated'])
+        // console.log(docSnap.data()?.['dated'])
 
         // let dated = 
         // requirement ==>  record = [{record:[],year:"SE"},{record:[],year:"TE"},{record:[],year:"BE"}]
@@ -28,19 +28,19 @@ const DailyReport = () => {
         data.forEach(doc => {
             let temp = { record: [doc.data()], year: doc.id }
             tempArr.push(temp)
-            console.log("doc.data()", doc.id, doc.data())
+            // console.log("doc.data()", doc.id, doc.data())
         })
         data.forEach(doc => {
             if ((Object.keys(doc.data()).length !== 0)) {
-                console.log("------data------")
+                // console.log("------data------")
                 return
             }
-            console.log("no data")
+            // console.log("no data")
         })
 
-        console.log("tempArr", tempArr)
+        // console.log("tempArr", tempArr)
         setRecord(tempArr)
-        console.log("tempArr", tempArr)
+        // console.log("tempArr", tempArr)
         // setRecordDate(tempArr[0]?.['record']?.[0]?.["A"]?.["Dated"] || tempArr[1]?.['record']?.[0]?.["A"]?.["Dated"] || tempArr[2]?.['record']?.[0]?.["A"]?.["Dated"])
         // setRecordDate()
         setLoading(false)
@@ -49,7 +49,7 @@ const DailyReport = () => {
     useEffect(() => {
         getData()
         isLoggedIn()
-        console.log("record", record)
+        // console.log("record", record)
     }, [])
     return (
         loading ? <Loader /> :

@@ -120,7 +120,7 @@ const Navbar = (props) => {
     console.log("ok")
     try {
       let { data } = await axios.post(`https://noteattendance.onrender.com/api/mark_attendance`, {
-        ...formValues, presentStudents, reqDate, overwrite, userName, userEmail
+        ...formValues, presentStudents, reqDate, overwrite, userName, userEmail,token:localStorage.getItem('token') || ' '
       })
       setPresentStudents([])
       localStorage.removeItem('presentStudents')
