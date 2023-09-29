@@ -22,14 +22,14 @@ const Choices = () => {
         // console.log(formValues)
     }
     useEffect(() => {
-        setTheorySubjects(getStructure()[formValues.year]["theory"])
-        setLabSubjects(getStructure()[formValues.year]["labs"])
-        setBatches(getStructure()[formValues.year]["batches"])
+        setTheorySubjects(getStructure()?.[formValues.year]?.["theory"])
+        setLabSubjects(getStructure()?.[formValues.year]?.["labs"])
+        setBatches(getStructure()?.[formValues.year]?.["batches"])
         setFormValues({
             ...formValues,
-            subject: subjects[formValues.year].theory[0],
-            labSubject: subjects[formValues.year].labs[0],
-            batch: subjects[formValues.year].batches[0]
+            subject: subjects[formValues.year]?.theory[0],
+            labSubject: subjects[formValues.year]?.labs[0],
+            batch: subjects[formValues.year]?.batches[0]
         })
         // console.log("subjects", subjects)
     }, [formValues.year, formValues.div])
