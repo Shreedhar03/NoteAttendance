@@ -38,7 +38,7 @@ const Student_Info = () => {
         let { data } = await axios.post(`https://noteattendance.onrender.com/api/get_report`, {...student_data,token:localStorage.getItem('token') || ' '})
         // console.log("data", data)
         if(data.success){
-            setRecord(data.record)
+            setRecord(data.report)
         }
         setLoading(false)
     }

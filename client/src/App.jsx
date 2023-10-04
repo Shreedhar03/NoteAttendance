@@ -41,7 +41,7 @@ setPersistence(auth, browserLocalPersistence)
 
 const provider = new GoogleAuthProvider()
 // permitted users
-const permittedUsers = ['21511642.dypit@dypvp.edu.in', 'yash25.j@gmail.com']
+const permittedUsers = ['21511642.dypit@dypvp.edu.in','urawane03@gmail.com','21512352.dypit@dypvp.edu.in','principal.engg@dypvp.edu.in','hodcomp.engg@dypvp.edu.in','sharad.adsure@dypvp.edu.in','kapil.vhatkar@dypvp.edu.in','atul.kathole@dypvp.edu.in','jameer.kotwal@dypvp.edu.in', 'yash25.j@gmail.com']
 export const AppContext = createContext()
 
 const getStudents = () => {
