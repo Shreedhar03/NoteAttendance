@@ -25,7 +25,7 @@ const Navbar = (props) => {
   let rollNos, outOf;
 
   const markFirstLecture = async () => {
-
+    console.log("---marking 1st Lecture---")
     const existingData = await getDoc(docRef)
     console.log("existingData", existingData?.data()[formValues.div]['Dated'])
     const record = {
@@ -57,14 +57,16 @@ const Navbar = (props) => {
           // 'D' : record 
         })
         console.log("this is 1st lecture")
+        console.log("markedFL")
       }
-      console.log("markedFL")
     } catch (err) {
       showErrorPage(err.message)
       console.log(err)
     }
   }
   const checkDate = async () => {
+    console.log("check date")
+
     const existingData = await getDoc(docRef)
     const existingDataSE = await getDoc(docRefSE)
     const existingDataTE = await getDoc(docRefTE)
@@ -109,7 +111,6 @@ const Navbar = (props) => {
         })
       }
     }
-
     markFirstLecture()
     console.log(rollNos, '/', outOf)
 
@@ -117,16 +118,19 @@ const Navbar = (props) => {
 
   const handleSubmit = async () => {
     navigate('/feedback')
-    console.log("ok")
     try {
       let { data } = await axios.post(`https://noteattendance.onrender.com/api/mark_attendance`, {
         ...formValues, presentStudents, reqDate, overwrite, userName, userEmail,token:localStorage.getItem('token') || ' '
       })
-      setPresentStudents([])
-      localStorage.removeItem('presentStudents')
-      setSubmitted(true)
-      checkDate()
-      console.log(data)
+      if(data==="SUCCESS"){
+
+        setPresentStudents([])
+        localStorage.removeItem('presentStudents')
+        setSubmitted(true)
+        checkDate()
+        console.log("ok")
+      }
+      console.log("response" , data)
     } catch (err) {
       console.log(err)
       showErrorPage(err.message)

@@ -41,7 +41,7 @@ setPersistence(auth, browserLocalPersistence)
 
 const provider = new GoogleAuthProvider()
 // permitted users
-const permittedUsers = ['21511642.dypit@dypvp.edu.in','urawane03@gmail.com','21512352.dypit@dypvp.edu.in','principal.engg@dypvp.edu.in','hodcomp.engg@dypvp.edu.in','sharad.adsure@dypvp.edu.in','kapil.vhatkar@dypvp.edu.in','atul.kathole@dypvp.edu.in','jameer.kotwal@dypvp.edu.in', 'yash25.j@gmail.com']
+const permittedUsers = ['21511642.dypit@dypvp.edu.in', 'urawane03@gmail.com', '21512352.dypit@dypvp.edu.in', 'principal.engg@dypvp.edu.in', 'hodcomp.engg@dypvp.edu.in', 'sharad.adsure@dypvp.edu.in', 'kapil.vhatkar@dypvp.edu.in', 'atul.kathole@dypvp.edu.in', 'jameer.kotwal@dypvp.edu.in', 'yash25.j@gmail.com']
 export const AppContext = createContext()
 
 const getStudents = () => {
@@ -49,32 +49,31 @@ const getStudents = () => {
 }
 const getFormValues = () => {
   return JSON.parse(localStorage.getItem('formValues')) || {
-    year: "TE",
+    year: "SE",
     div: "A",
     session: "Theory",
-    subject: "CN",
-    labSubject: "CNSL",
+    subject: "OOP",
+    labSubject: "OOPCGL",
     batch: "1"
   }
 }
 const getStructure = () => {
   return JSON.parse(localStorage.getItem("structure")) ||
   {
-    "TE": {
+    "SE": {
       "theory": [
-        "CN",
-        "DBMS",
-        "ELEC",
-        "SPOS",
-        "TOC",
-        "EL1: HCI",
-        "EL1: SPM",
-        "EL1: IOT"
+        "CG",
+        "DM",
+        "FDS",
+        "HSS",
+        "OOP",
+        "DELD"
       ],
       "labs": [
-        "CNSL",
-        "DBMSL",
-        "LP1"
+        "BCSL",
+        "DEL",
+        "DSL",
+        "OOPCGL"
       ],
       "batches": [
         "1",
@@ -131,22 +130,6 @@ function App() {
       }
     })
   }
-  // check if logged in
-
-  const isLoggedIn = () => {
-    onAuthStateChanged(auth, user => {
-      setLoading(true)
-      if (!user || !(permittedUsers.includes(user.email))) {
-        goto('/')
-        setLoading(false)
-        // ,{
-        //   state:{message:"Please login to Continue"}
-        // })
-      } else {
-        setLoading(false)
-      }
-    })
-  }
 
   const fetchStructure = async () => {
     let { data } = await axios.get(`https://noteattendance.onrender.com/api/get_structure`, {
@@ -186,6 +169,7 @@ function App() {
     signOut(auth)
       .then(() => {
         localStorage.removeItem('token')
+        localStorage.clear()
         console.log('Sign-out successful!')
         setLoading(false)
       })
@@ -194,7 +178,27 @@ function App() {
       })
   }
 
+  // check if logged in
+
+  const isLoggedIn = async () => {
+    let { data } = await axios.get(`https://noteattendance.onrender.com/api/validateToken`)
+    onAuthStateChanged(auth, user => {
+      setLoading(true)
+      if (!user || !(permittedUsers.includes(user.email))) {
+        goto('/')
+        setLoading(false)
+      }
+      else if (!(data.success)) {
+        signOutWithGoogle()
+      } else {
+        setLoading(false)
+      }
+    })
+  }
   useEffect(() => {
+    console.log('useeffect of App.js')
+    // pingServer()
+    isLoggedIn()
     checkAuthState()
     !JSON.parse(localStorage.getItem('structure')) && fetchStructure()
   }, [])

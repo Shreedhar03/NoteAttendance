@@ -4,6 +4,7 @@ import Year from './Year'
 import { AppContext } from '../App'
 import { Link } from 'react-router-dom'
 import arrow from '../assets/arrow.svg'
+import whatsapp from '../assets/whatsapp.svg'
 import Loader from './Loader'
 
 const DailyReport = () => {
@@ -11,6 +12,8 @@ const DailyReport = () => {
     const [loading, setLoading] = useState(true)
     const [recordDate, setRecordDate] = useState('')
     const { db, isLoggedIn } = useContext(AppContext)
+    const [message,setMessage] = useState('')
+    const [ReportText,setReportText] = useState('')
     // const [date, setDate] = useState(new Date())
     const getData = async () => {
 
@@ -22,7 +25,7 @@ const DailyReport = () => {
         setRecordDate(docSnap.data()?.['dated'])
         // console.log(docSnap.data()?.['dated'])
 
-        // let dated = 
+        // let dated
         // requirement ==>  record = [{record:[],year:"SE"},{record:[],year:"TE"},{record:[],year:"BE"}]
         let tempArr = []
         data.forEach(doc => {
@@ -43,9 +46,39 @@ const DailyReport = () => {
         // console.log("tempArr", tempArr)
         // setRecordDate(tempArr[0]?.['record']?.[0]?.["A"]?.["Dated"] || tempArr[1]?.['record']?.[0]?.["A"]?.["Dated"] || tempArr[2]?.['record']?.[0]?.["A"]?.["Dated"])
         // setRecordDate()
+
+        let reportText = ''
+        // reportText+='hello'
+        tempArr.forEach(year=>{
+            console.log("year",year.year)
+            if(year.year!=='Dated') {
+                reportText+=`%0a*${year.year}*%0a`
+                for (const division in year.record[0]) {
+                    let div = year.record[0]?.[division]?.division
+                    let outOf = year.record[0]?.[division]?.outOf?.[0]
+                    let present = year.record[0]?.[division]?.presentCount?.[0]
+                    if(!outOf || !present || !div){
+                        
+                    }else{
+                        reportText+=(div + ' - ')
+                        reportText+=(present+'/')
+                        reportText+=(outOf + '%0a')
+                    }
+                }
+                
+            }
+        })
+
+        console.log("------reportText------" , reportText)
+        setReportText(reportText)
+        console.log(recordDate.toString())
+        console.log("ReportText",ReportText)
+        
         setLoading(false)
     }
-
+    useEffect(()=>{
+        setMessage(`DIT Computer Dept. %0a%0aAttendance Report ( 1st Lecture ) %0a*${recordDate.toString()}*%0a ${ReportText}`)
+    },[ReportText])
     useEffect(() => {
         getData()
         isLoggedIn()
@@ -61,9 +94,14 @@ const DailyReport = () => {
                     <h2 className='text-3xl'>Attendance Overview</h2>
                     <p className='text-gray-700 font-semibold text-lg'>First Lecture</p>
                 </div>
-                <p className="font-semibold border-2 border-black rounded-lg self-start p-1">
-                    {recordDate}
-                </p>
+                <div className='flex justify-between'>
+                    <p className="font-semibold border-2 border-black rounded-lg self-start p-1">
+                        {recordDate}
+                    </p>
+                    <a href={`https://wa.me/?text=${message}`}>
+                        <img src={whatsapp} alt="whatsapp" className='w-8'/>
+                    </a>
+                </div>
 
                 <div className='mt-4'>
                     {

@@ -1,6 +1,6 @@
 // import dotenv from 'dotenv'
 const dotenv = require('dotenv')
-const {verifyToken} = require('./Middleware/verifyToken')
+const { verifyToken } = require('./Middleware/verifyToken')
 dotenv.config()
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 const { JWT } = require('google-auth-library')
@@ -44,7 +44,7 @@ for (let key in config) {
 // console.log(structure)
 
 app.get('/api/get_structure', verifyToken, (req, res) => {
-  res.json({success:true,structure})
+  res.json({ success: true, structure })
 })
 
 app.get('/api/get_students', verifyToken, async (req, res) => {
@@ -112,7 +112,7 @@ app.get('/api/get_students', verifyToken, async (req, res) => {
       return res.status(400).send("Invalid request")
     }
 
-    res.json({ entryExists, students,success:true })
+    res.json({ entryExists, students, success: true })
   } catch (err) {
     console.log(err.message)
     return res.status(400).send("Invalid request")
@@ -305,7 +305,7 @@ app.get('/api/search_students', verifyToken, async (req, res) => {
     }
   }
 
-  res.json({success:true,students})
+  res.json({ success: true, students })
 })
 
 app.post('/api/get_report', verifyToken, async (req, res) => {
@@ -389,7 +389,7 @@ app.post('/api/get_report', verifyToken, async (req, res) => {
     report.labsDist = labsDist
 
     console.log("SUCCESS")
-    res.json({success:true,report})
+    res.json({ success: true, report })
 
   } catch (err) {
     console.log(err.message)
@@ -420,6 +420,10 @@ app.get('/api/test', verifyToken, async (req, res) => {
   res.send("DONE")
 })
 
-app.get('/testMiddleware' , verifyToken , (req,res)=>{
+app.get('/testMiddleware', verifyToken, (req, res) => {
   res.send('Verified')
+})
+
+app.get('/api/validateToken', verifyToken, (req, res) => {
+  res.send({success:true})
 })
