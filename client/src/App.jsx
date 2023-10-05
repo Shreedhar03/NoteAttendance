@@ -191,6 +191,7 @@ function App() {
         setLoading(false)
       }
       else if (!(data.success)) {
+        console.log('----------sign out----------')
         signOutWithGoogle()
       } else {
         setLoading(false)

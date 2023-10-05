@@ -50,15 +50,19 @@ const DailyReport = () => {
         let reportText = ''
         // reportText+='hello'
         tempArr.forEach(year=>{
-            console.log("year",year.year)
+            // console.log("year",year.year)
             if(year.year!=='Dated') {
                 reportText+=`%0a*${year.year}*%0a`
                 for (const division in year.record[0]) {
                     let div = year.record[0]?.[division]?.division
-                    let outOf = year.record[0]?.[division]?.outOf?.[0]
-                    let present = year.record[0]?.[division]?.presentCount?.[0]
+                    let outOf = year.record[0]?.[division]?.outOf?.[0] || year.record[0]?.[division]?.outOf?.[1]
+                    let present = year.record[0]?.[division]?.presentCount?.[0] || year.record[0]?.[division]?.presentCount?.[1]
+
+                    // console.log(div)
+                    // console.log(outOf)
+                    // console.log(present)
                     if(!outOf || !present || !div){
-                        
+                        console.log("no", year.year , outOf , present , div)
                     }else{
                         reportText+=(div + ' - ')
                         reportText+=(present+'/')

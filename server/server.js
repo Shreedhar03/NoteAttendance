@@ -425,5 +425,5 @@ app.get('/testMiddleware', verifyToken, (req, res) => {
 })
 
 app.get('/api/validateToken', verifyToken, (req, res) => {
-  res.send({success:true})
+  res.json({success:true})
 })
