@@ -181,7 +181,9 @@ function App() {
   // check if logged in
 
   const isLoggedIn = async () => {
-    let { data } = await axios.get(`https://noteattendance.onrender.com/api/validateToken`)
+    let { data } = await axios.get(`https://noteattendance.onrender.com/api/validateToken` , 
+      { params: { token: localStorage.getItem('token') || ' ' } }
+    )
     onAuthStateChanged(auth, user => {
       setLoading(true)
       if (!user || !(permittedUsers.includes(user.email))) {
