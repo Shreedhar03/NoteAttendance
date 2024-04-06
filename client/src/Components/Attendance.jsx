@@ -14,7 +14,7 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 const Attendance = () => {
     const goto = useNavigate()
-    const {signOutWithGoogle, showErrorPage, setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, isLoggedIn, presentStudents, setPresentStudents } = useContext(AppContext)
+    const { validateToken, showErrorPage, setOverwrite, setEntryExists, entryExists, students, setStudents, formValues, isLoggedIn, presentStudents, setPresentStudents } = useContext(AppContext)
     const [dialog, setDialog] = useState(false)
     const [loading, setLoading] = useState(true)
     const [gridView, setGridView] = useState(false)
@@ -26,7 +26,7 @@ const Attendance = () => {
 
     const fetchStudents = async () => {
         try {
-            const { data } = await axios.get(`https://noteattendance.onrender.com/api/get_students`,
+            const { data } = await axios.get(`${import.meta.env.VITE_serverURL}/api/get_students`,
                 { params: { ...formValues, token: localStorage.getItem('token') || ' ' } }
             )
             console.log(data)
@@ -85,6 +85,7 @@ const Attendance = () => {
         setPresentStudents([])
     }
     useEffect(() => {
+        validateToken()
         isLoggedIn()
         fetchStudents()
         setDate(new Date())
@@ -98,7 +99,7 @@ const Attendance = () => {
         <>
             {
                 loading ?
-                    <Loader />
+                    <Loader message="Getting students' list" />
                     :
                     <>
                         <Navbar date={date} navShodow={navShodow} setNavShodow={setNavShodow} presentStudents={presentStudents} students={students} />

@@ -132,7 +132,7 @@ function App() {
   }
 
   const fetchStructure = async () => {
-    let { data } = await axios.get(`https://noteattendance.onrender.com/api/get_structure`, {
+    let { data } = await axios.get(`${import.meta.env.VITE_serverURL}/api/get_structure`, {
       params: { token: localStorage.getItem('token') || " " }
     })
     console.log("structureData:", data)
@@ -180,23 +180,30 @@ function App() {
 
   // check if logged in
 
-  const isLoggedIn = async () => {
-    let { data } = await axios.get(`https://noteattendance.onrender.com/api/validateToken` , 
-      { params: { token: localStorage.getItem('token') || ' ' } }
-    )
-    onAuthStateChanged(auth, user => {
+  const isLoggedIn = () => {
+
+    // console.log(data)
+    onAuthStateChanged(auth, async user => {
       setLoading(true)
+
       if (!user || !(permittedUsers.includes(user.email))) {
         goto('/')
         setLoading(false)
-      }
-      else if (!(data.success)) {
-        console.log('----------sign out----------')
-        signOutWithGoogle()
       } else {
         setLoading(false)
       }
     })
+  }
+
+  const validateToken = async () => {
+
+    let { data } = await axios.get(`${import.meta.env.VITE_serverURL}/api/validateToken`,
+      { params: { token: localStorage.getItem('token') || ' ' } }
+    )
+    console.log("----validate token----", data)
+    if (!(data.success)) {
+      signOutWithGoogle()
+    }
   }
   useEffect(() => {
     console.log('useeffect of App.js')
@@ -212,6 +219,7 @@ function App() {
 
   return (
     <AppContext.Provider value={{
+      validateToken,
       isLoggedIn,
       showErrorPage,
       subjects,

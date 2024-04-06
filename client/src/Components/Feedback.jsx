@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom'
 import Loader from './Loader'
 const Feedback = () => {
     const navigate = useNavigate()
-    const { formValues, isLoggedIn, submitted, setSubmitted } = useContext(AppContext)
+    const { formValues, isLoggedIn,validateToken, submitted, setSubmitted } = useContext(AppContext)
     useEffect(() => {
         isLoggedIn()
+        validateToken()
     }, [])
     return (
         submitted ?
@@ -21,7 +22,7 @@ const Feedback = () => {
             </section>
             :
             <>
-                <Loader />
+                <Loader message="Marking Attendance"/>
             </>
 
     )

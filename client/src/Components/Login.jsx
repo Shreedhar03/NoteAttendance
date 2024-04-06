@@ -13,7 +13,7 @@ const Login = () => {
         // !checkLoggedIn && goto('/selection')
     }, [])
     return (
-        loading ? <Loader />
+        loading ? <Loader message={"Loading"}/>
             :
             <div className='h-[80vh] flex flex-col items-center justify-center gap-20'>
                 <div className="logo flex items-center">
@@ -34,7 +34,7 @@ const Login = () => {
                 {
                     checkLoggedIn ?
 
-                        <Link to={'/selection'} className='px-8 py-3 bg-[var(--primary)] text-white rounded-xl'>Continue</Link>
+                        <Link to={'/selection'} className='px-8 py-3 bg-[var(--primary)] text-white p-2'>Continue</Link>
                         :
 
                         <>

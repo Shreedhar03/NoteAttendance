@@ -119,10 +119,10 @@ const Navbar = (props) => {
   const handleSubmit = async () => {
     navigate('/feedback')
     try {
-      let { data } = await axios.post(`https://noteattendance.onrender.com/api/mark_attendance`, {
-        ...formValues, presentStudents, reqDate, overwrite, userName, userEmail,token:localStorage.getItem('token') || ' '
+      let { data } = await axios.post(`${import.meta.env.VITE_serverURL}/api/mark_attendance`, {
+        ...formValues, presentStudents, reqDate, overwrite, userName, userEmail, token: localStorage.getItem('token') || ' '
       })
-      if(data==="SUCCESS"){
+      if (data === "SUCCESS") {
 
         setPresentStudents([])
         localStorage.removeItem('presentStudents')
@@ -130,7 +130,7 @@ const Navbar = (props) => {
         checkDate()
         console.log("ok")
       }
-      console.log("response" , data)
+      console.log("response", data)
     } catch (err) {
       console.log(err)
       showErrorPage(err.message)

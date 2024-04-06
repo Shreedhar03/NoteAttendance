@@ -114,7 +114,7 @@ app.get('/api/get_students', verifyToken, async (req, res) => {
 
     res.json({ entryExists, students, success: true })
   } catch (err) {
-    console.log(err.message)
+    console.log("err.message" , err.message)
     return res.status(400).send("Invalid request")
   }
 })

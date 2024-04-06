@@ -11,7 +11,7 @@ const DailyReport = () => {
     const [record, setRecord] = useState([])
     const [loading, setLoading] = useState(true)
     const [recordDate, setRecordDate] = useState('')
-    const { db, isLoggedIn } = useContext(AppContext)
+    const { db, isLoggedIn,validateToken } = useContext(AppContext)
     const [message,setMessage] = useState('')
     const [ReportText,setReportText] = useState('')
     // const [date, setDate] = useState(new Date())
@@ -54,19 +54,21 @@ const DailyReport = () => {
             if(year.year!=='Dated') {
                 reportText+=`%0a*${year.year}*%0a`
                 for (const division in year.record[0]) {
+                    let subject = year.record[0]?.[division]?.title
                     let div = year.record[0]?.[division]?.division
                     let outOf = year.record[0]?.[division]?.outOf?.[0] || year.record[0]?.[division]?.outOf?.[1]
                     let present = year.record[0]?.[division]?.presentCount?.[0] || year.record[0]?.[division]?.presentCount?.[1]
-
+                    console.log("-------------------",year)
                     // console.log(div)
                     // console.log(outOf)
                     // console.log(present)
-                    if(!outOf || !present || !div){
-                        console.log("no", year.year , outOf , present , div)
+                    if(!outOf || !present || !div || !subject){
+                        console.log("no", year.year , outOf , present , div,subject)
                     }else{
                         reportText+=(div + ' - ')
                         reportText+=(present+'/')
-                        reportText+=(outOf + '%0a')
+                        reportText+=(outOf)
+                        reportText+=(` ( ${subject} ) ` + '%0a' )
                     }
                 }
                 
@@ -86,10 +88,11 @@ const DailyReport = () => {
     useEffect(() => {
         getData()
         isLoggedIn()
+        validateToken()
         // console.log("record", record)
     }, [])
     return (
-        loading ? <Loader /> :
+        loading ? <Loader message={"Getting report"}/> :
             <section className='flex flex-col gap-2 px-4'>
                 <Link to={'/selection'} className='text-3xl text-gray-800 self-start my-6'>
                     <img src={arrow} alt='arrow' />

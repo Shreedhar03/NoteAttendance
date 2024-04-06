@@ -15,7 +15,7 @@ const Student_Info = () => {
     }
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
-    const { isLoggedIn } = useContext(AppContext)
+    const { isLoggedIn, validateToken } = useContext(AppContext)
     const [record, setRecord] = useState({
         roll: '',
         name: '',
@@ -35,9 +35,9 @@ const Student_Info = () => {
         )
     }
     const fetchRecord = async () => {
-        let { data } = await axios.post(`https://noteattendance.onrender.com/api/get_report`, {...student_data,token:localStorage.getItem('token') || ' '})
+        let { data } = await axios.post(`${import.meta.env.VITE_serverURL}/api/get_report`, { ...student_data, token: localStorage.getItem('token') || ' ' })
         // console.log("data", data)
-        if(data.success){
+        if (data.success) {
             setRecord(data.report)
         }
         setLoading(false)
@@ -45,11 +45,12 @@ const Student_Info = () => {
     useEffect(() => {
         isLoggedIn()
         fetchRecord()
+        validateToken()
         // console.log(student_data)
     }, [])
     return (
         loading ?
-            <Loader />
+            <Loader message={"Getting student's data"} />
             :
             <div className='flex flex-col bg-slate-10 px-6 my-6'>
                 <button className='self-start text-3xl text-gray-700 mb-4' onClick={() => navigate('/search')}>
